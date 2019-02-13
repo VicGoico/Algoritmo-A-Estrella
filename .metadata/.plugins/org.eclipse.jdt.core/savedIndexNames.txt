@@ -8,7 +8,6 @@ INDEX VERSION 1.127+C:\Users\Nafakara\Desktop\Pruebas\Probando\Algoritmo-A-Estre
 889527592.index
 882150708.index
 2040813865.index
-1935204515.index
 3920458890.index
 2790403920.index
 3392843127.index
