@@ -2,22 +2,26 @@ package CapaNegocio;
 
 public class TNodo {
 	private boolean usado;
-	private double h;// Distancia al nodo actual
-	private double g;// Distancia al nodo meta
-	private double distancia;// es la f() = h()+g()
+	private double h; 	// Formula h(n) = sqrt((x1+x2)^2+(y1+y2)^2)
+	private double g;	// Formula g(n) = SUMA(h(n))
+	private double f;	// Formula f(n) = h(n) + g(n)
+	private String tipo;
 	
-	public TNodo(boolean usado, double h, double g, double distancia){
+	public TNodo(boolean usado, double h, double g, double f, String tipo){
 		this.usado = usado;
 		this.h = h;
 		this.g = g;
-		this.distancia = distancia;
-		this.setUsado(usado);
-		this.setH(h);
-		this.setG(g);
-		this.setDistancia(distancia);
+		this.f = f;
+		this.tipo = tipo;
 	}
 
 	// Empiezan los getters y los setters
+	public String getTipo(){
+		return this.tipo;
+	}
+	public void setTipo(String tipo){
+		this.tipo = tipo;
+	}
 	public boolean getUsado() {
 		return this.usado;
 	}
@@ -43,11 +47,15 @@ public class TNodo {
 	}
 
 	public double getDistancia() {
-		return this.distancia;
+		return this.f;
 	}
 
-	public void setDistancia(double distancia) {
-		this.distancia = distancia;
+	public void setDistancia(double f) {
+		this.f = f;
 	}
 	// Acaban los setter y getters
+	
+	
+	
+	
 }
