@@ -27,8 +27,10 @@ public class TNodo {
 		}
 	}
 	public void calcularH(Coordenadas mias, Coordenadas meta){
+		System.out.println("LLega");
 		double suma = Math.pow((mias.getI()-meta.getI()), 2)+Math.pow((mias.getJ()-meta.getJ()), 2);
 		this.h = Math.sqrt(suma);
+		
 	}
 	public void calcularF(){
 		this.f = this.h+this.g;

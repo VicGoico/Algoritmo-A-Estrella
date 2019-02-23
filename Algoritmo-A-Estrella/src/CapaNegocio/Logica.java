@@ -35,38 +35,55 @@ public class Logica {
 		this.abierta = new PriorityQueue<>(comparardor);
 		this.cerrada = new ArrayList<>();
 		this.matriz = new TNodo[n][m];
+		this.inicio = new Coordenadas(0,0);
+		this.meta = new Coordenadas(4,4);
 		
-		this.generarTableroAleatoriamente();
+		
+		
 		// Falta poner zonas de paso: prohibidas, con penalizacion, etc
 		for(int i = 0; i < n; i++){
 			for(int j = 0;j < m; j++){
 				Coordenadas c = new Coordenadas(i,j);
 				TNodo nodo = new TNodo(false, 0, 0, 0, "Normal", c);
 				
-				this.matriz[i][j] = nodo;
-				
+				this.matriz[i][j] = nodo;				
 			}
 		}
-		
+		this.generarTableroAleatoriamente();
 		this.calcularCamino();
+		int i = 0;
+		while(this.matriz[this.actual.getI()][this.actual.getJ()].getPadre() != null){
+			TNodo nod = this.matriz[this.actual.getI()][this.actual.getJ()].getPadre();
+			System.out.println("Coordenadas: "+ i+  " I: "+ this.actual.getI()  +" J: " + this.actual.getJ());
+			this.actual = nod.getPadre().getC();
+			i++;
+		}
 	}
 	
 	public void generarTableroAleatoriamente(){
-		int tam = this.dimensionM*this.dimensionN;
-		this.inicio.setI((int) (Math.random()*tam));
-		this.inicio.setJ((int) (Math.random()*tam));
-		TNodo aux = this.matriz[this.inicio.getI()][this.inicio.getJ()];
-		aux.calcularH(this.inicio, this.meta);
-		aux.calcularG();
-		aux.calcularF();
+		/*this.inicio.setI((int) (Math.random()*this.dimensionN));
+		this.inicio.setJ((int) (Math.random()*this.dimensionM));
+		System.out.println("Inicio: "+this.inicio.getI()+ " " + this.inicio.getJ());
 		
-		this.meta.setI((int) (Math.random()*tam));
-		this.meta.setJ((int) (Math.random()*tam));
+		
+		this.meta.setI((int) (Math.random()*this.dimensionN));
+		this.meta.setJ((int) (Math.random()*this.dimensionM));
 		// Para que no salga un mismo punto de Inicio y de Meta
 		while((this.meta.getI()!=this.inicio.getI()) && (this.meta.getJ()!= this.inicio.getJ())){
-			this.meta.setI((int) (Math.random()*tam));
-			this.meta.setJ((int) (Math.random()*tam));
-		}
+			this.meta.setI((int) (Math.random()*this.dimensionN));
+			this.meta.setJ((int) (Math.random()*this.dimensionM));
+		}*/
+		TNodo aux = this.matriz[this.inicio.getI()][this.inicio.getJ()];
+		System.out.println("Meta: "+this.meta.getI()+ " " + this.meta.getJ());
+		
+		
+		/*double suma = Math.pow((this.inicio.getI()-meta.getI()), 2)+Math.pow((inicio.getJ()-meta.getJ()), 2);
+		double sol = Math.sqrt(suma);
+		System.out.println("Solucion: " + sol);*/
+		aux.calcularH(this.inicio, this.meta);
+		aux.setG(0);
+		aux.calcularF();
+		System.out.println("FIN");
 		// Ya generados los puntos de Inicio y Meta		
 	}
 	public void calcularCamino(){
@@ -142,9 +159,10 @@ public class Logica {
 					}
 				}
 			}
+			coge = this.abierta.peek();
 			// Elegir el siguiente nodo a tratar
 			this.actual = this.abierta.peek().getC();
-			coge = this.abierta.peek();
+			
 			this.abierta.poll();
 			this.cerrada.add(coge);
 		}
