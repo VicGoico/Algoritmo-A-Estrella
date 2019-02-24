@@ -36,7 +36,7 @@ public class Logica {
 		this.cerrada = new ArrayList<>();
 		this.matriz = new TNodo[n][m];
 		this.inicio = new Coordenadas(0,0);
-		this.meta = new Coordenadas(4,4);
+		this.meta = new Coordenadas(1,1);
 		
 		
 		
@@ -52,12 +52,19 @@ public class Logica {
 		this.generarTableroAleatoriamente();
 		this.calcularCamino();
 		int i = 0;
-		while(this.matriz[this.actual.getI()][this.actual.getJ()].getPadre() != null){
-			TNodo nod = this.matriz[this.actual.getI()][this.actual.getJ()].getPadre();
-			System.out.println("Coordenadas: "+ i+  " I: "+ this.actual.getI()  +" J: " + this.actual.getJ());
-			this.actual = nod.getPadre().getC();
+		System.out.println("Pintamos el camino para llegar");
+		TNodo nod = this.matriz[this.actual.getI()][this.actual.getJ()];
+		while(nod.getPadre() != null){
+			nod = this.matriz[this.actual.getI()][this.actual.getJ()].getPadre();
+			System.out.println("Coordenadas: "+ i +  " I: "+ this.actual.getI()  +" J: " + this.actual.getJ());
+			if(nod.getPadre() == null){
+				System.out.println("NULLLLLL");
+			}
+			this.actual.setI(nod.getPadre().getC().getI());
+			this.actual.setJ(nod.getPadre().getC().getJ());
 			i++;
 		}
+		System.out.println("FIN del PROGRAMA");
 	}
 	
 	public void generarTableroAleatoriamente(){
@@ -83,7 +90,7 @@ public class Logica {
 		aux.calcularH(this.inicio, this.meta);
 		aux.setG(0);
 		aux.calcularF();
-		System.out.println("FIN");
+		
 		// Ya generados los puntos de Inicio y Meta		
 	}
 	public void calcularCamino(){
@@ -96,86 +103,119 @@ public class Logica {
 		this.cerrada.add(this.abierta.peek());
 		this.abierta.poll();
 		
-		while(this.actual != this.meta && !salir){
+		while(!salir){
 			// Miro que este usado o no, si esta usado es que ya esta en la lista cerrada
 			if(!this.matriz[this.actual.getI()][this.actual.getJ()].getUsado()){
-				this.matriz[this.actual.getI()][this.actual.getJ()].setUsado(true);
 				for(int i= 0; i < 8; i++){
 					if(i == 0){// Arriba a la izquierda
 						aux.setI(this.actual.getI()-1);
 						aux.setJ(this.actual.getJ()-1);
 						if(aux.getI() >= 0 && aux.getJ() >= 0){// Esta bien
-							hacerLoMismo(this.matriz[aux.getI()][aux.getJ()], aux);
+							coge = this.matriz[aux.getI()][aux.getJ()];
+							hacerLoMismo(coge, aux);
 						}
 					}
 					else if(i == 1){// Arriba 
 						aux.setI(this.actual.getI()-1);
 						aux.setJ(this.actual.getJ());
 						if(aux.getI() >= 0){// Esta bien
-							hacerLoMismo(this.matriz[aux.getI()][aux.getJ()], aux);
+							coge = this.matriz[aux.getI()][aux.getJ()];
+							hacerLoMismo(coge, aux);
 						}
 					}
 					else if(i == 2){// Arriba a la derecha
 						aux.setI(this.actual.getI()-1);
 						aux.setJ(this.actual.getJ()+1);
 						if(aux.getI() >= 0 && aux.getJ()<this.dimensionM){// Esta bien
-							hacerLoMismo(this.matriz[aux.getI()][aux.getJ()], aux);
+							coge = this.matriz[aux.getI()][aux.getJ()];
+							hacerLoMismo(coge, aux);
 						}
 					}
 					else if(i == 3){// Izquierda
 						aux.setI(this.actual.getI());
 						aux.setJ(this.actual.getJ()-1);
 						if(aux.getJ() >= 0){// Esta bien
-							hacerLoMismo(this.matriz[aux.getI()][aux.getJ()], aux);
+							coge = this.matriz[aux.getI()][aux.getJ()];
+							hacerLoMismo(coge, aux);
 						}
 					}
 					else if(i == 4){// Derecha
 						aux.setI(this.actual.getI());
 						aux.setJ(this.actual.getJ()+1);
 						if(aux.getJ() < this.dimensionM){// Esta bien
-							hacerLoMismo(this.matriz[aux.getI()][aux.getJ()], aux);
+							coge = this.matriz[aux.getI()][aux.getJ()];
+							hacerLoMismo(coge, aux);
+							if(this.matriz[0][1].getPadre() == null){
+								System.out.println("Es null el padre");
+							}
+							System.out.println("Padre: I: " + this.matriz[0][1].getPadre().getC().getI()+ " J: "+this.matriz[0][1].getPadre().getC().getI());
 						}
 					}
 					else if(i == 5){// Izquierda inferior
 						aux.setI(this.actual.getI()+1);
 						aux.setJ(this.actual.getJ()-1);
 						if(aux.getI() < this.dimensionN && aux.getJ() >= 0){// Esta bien
-							hacerLoMismo(this.matriz[aux.getI()][aux.getJ()], aux);
+							coge = this.matriz[aux.getI()][aux.getJ()];
+							hacerLoMismo(coge, aux);
 						}
 					}
 					else if(i == 6){// Abajo
+						/*if(this.actual.getI() == 3 && this.actual.getJ() == 4){
+							System.out.println("para");
+						}*/
 						aux.setI(this.actual.getI()+1);
 						aux.setJ(this.actual.getJ());
 						if(aux.getI() < this.dimensionN){// Esta bien
-							hacerLoMismo(this.matriz[aux.getI()][aux.getJ()], aux);
+							coge = this.matriz[aux.getI()][aux.getJ()];
+							hacerLoMismo(coge, aux);
 						}
 					}
 					else if(i == 7){// Derecha inferior
 						aux.setI(this.actual.getI()+1);
 						aux.setJ(this.actual.getJ()+1);
 						if(aux.getI() < this.dimensionN && aux.getJ() < this.dimensionM){// Esta bien
-							hacerLoMismo(this.matriz[aux.getI()][aux.getJ()], aux);
+							coge = this.matriz[aux.getI()][aux.getJ()];
+							hacerLoMismo(coge, aux);
 						}
 					}
 				}
+				
 			}
 			coge = this.abierta.peek();
-			// Elegir el siguiente nodo a tratar
-			this.actual = this.abierta.peek().getC();
+			System.out.println("Coordenadas "+coge.getC().getI()+" "+ coge.getC().getJ());
+			//
+			//System.out.println("Para");
 			
+			
+			// Compruebo que no he llegado a la meta
+			if(coge.getC().getI() == this.meta.getI() && coge.getC().getJ() == this.meta.getJ()){
+				salir = true;
+			}
+			
+			// Elegir el siguiente nodo a tratar
+			this.actual = coge.getC();
 			this.abierta.poll();
 			this.cerrada.add(coge);
+			this.matriz[this.actual.getI()][this.actual.getJ()].setUsado(true);
+			
+			
 		}
+		
 	}
 	public void hacerLoMismo(TNodo coge, Coordenadas aux){
 		// No tenemos que haber pasado por ahi
-		if(!coge.getUsado()){
-			coge.setUsado(true);
-			coge.setPadre(this.matriz[this.actual.getI()][this.actual.getJ()]);
-			coge.calcularH(aux, this.meta);
-			coge.calcularG();
-			coge.calcularF();
-			this.abierta.add(coge);
+		if(!this.matriz[aux.getI()][aux.getJ()].getUsado()){
+			//coge.setUsado(true);
+			TNodo padre = this.matriz[this.actual.getI()][this.actual.getJ()];
+			this.matriz[aux.getI()][aux.getJ()].setPadre(padre);
+			System.out.println("Coordenadas dentro al cambiar de padre: I: "+aux.getI()+ " J: "+aux.getJ());
+			//System.out.println("Padre: I: " + this.matriz[aux.getI()][aux.getJ()].getPadre().getC().getI()+ " J: "+this.matriz[aux.getI()][aux.getJ()].getPadre().getC().getI());
+			// Importante es lo que guarda el padre del nodo
+			// this.matriz[coge.getC().getI()][coge.getC().getJ()].setPadre(this.matriz[this.actual.getI()][this.actual.getJ()]);	
+			this.matriz[aux.getI()][aux.getJ()].calcularH(aux, this.meta);
+			this.matriz[aux.getI()][aux.getJ()].calcularG();
+			this.matriz[aux.getI()][aux.getJ()].calcularF();
+			this.abierta.add(this.matriz[aux.getI()][aux.getJ()]);
 		}
 	}
 }
