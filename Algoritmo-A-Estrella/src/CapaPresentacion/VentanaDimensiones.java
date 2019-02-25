@@ -16,8 +16,8 @@ import CapaNegocio.Logica;
 public class VentanaDimensiones extends JFrame{
 	public VentanaDimensiones(){
 		JFrame ventana = new JFrame("DIMENSIONES");
-		JTextField textoN = new JTextField("Introduce el numero de filas");
-		JTextField textoM = new JTextField("Introduce el numero de columnas");
+		JTextField textoN = new JTextField();
+		JTextField textoM = new JTextField(/*"Introduce el numero de columnas"*/);
 		
 		ventana.setSize(420, 200);
 		ventana.setLocationRelativeTo(null);
@@ -34,11 +34,15 @@ public class VentanaDimensiones extends JFrame{
 			public void actionPerformed(ActionEvent e) {
 				ventana.setVisible(false);
 				try{
-					int n = Integer.parseInt(textoN.getText());
-					int m = Integer.parseInt(textoM.getText());
-					Logica l = new Logica(n, m);
+					
+					String n1 = textoN.getText();
+					String m1 = textoM.getText();
+					
+					int n = Integer.parseInt(n1);
+					int m = Integer.parseInt(m1);
+					Pintar p = new Pintar(n, m);
 				}
-				catch(Exception e1){
+				catch(Exception fallo){
 					JOptionPane.showMessageDialog(null, "Las dimensiones no tienen un buen formato"+System.lineSeparator()+"Recuerda: Tienen que ser numeros sin comas");
 					System.exit(0);
 				}

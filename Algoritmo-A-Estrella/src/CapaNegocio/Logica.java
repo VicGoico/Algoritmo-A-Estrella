@@ -221,5 +221,8 @@ public class Logica {
 	public TNodo[][] getMatriz(){
 		return this.matriz;
 	}
+	public TNodo getTNodoEspecifico(int i, int j){
+		return this.matriz[i][j];
+	}
 	
 }
