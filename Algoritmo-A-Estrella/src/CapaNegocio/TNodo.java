@@ -5,16 +5,16 @@ public class TNodo {
 	private double h; 	// Formula h(n) = sqrt((x1-x2)^2+(y1-y2)^2)
 	private double g;	// Formula g(n) = SUMA(h(n))
 	private double f;	// Formula f(n) = h(n) + g(n)
-	private String tipo;
+	private Tipos tipo;
 	private TNodo padre;
 	private Coordenadas c;
 	
-	public TNodo(boolean usado, double h, double g, double f, String tipo, Coordenadas c){
+	public TNodo(boolean usado, double h, double g, double f, Tipos tipo, Coordenadas c){
 		this.usado = usado;
 		this.h = h;
 		this.g = g;
 		this.f = f;
-		this.tipo = tipo;
+		this.tipo = Tipos.BUENO;
 		this.c = c;
 		this.padre = null;
 	}
@@ -53,10 +53,10 @@ public class TNodo {
 		this.padre = padre;
 	}
 	
-	public String getTipo(){
+	public Tipos getTipo(){
 		return this.tipo;
 	}
-	public void setTipo(String tipo){
+	public void setTipo(Tipos tipo){
 		this.tipo = tipo;
 	}
 	public boolean getUsado() {
