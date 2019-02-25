@@ -21,10 +21,12 @@ public class TNodo {
 
 	public void calcularG(){
 		this.g = this.h;
+		TNodo save = this.padre;
 		while(this.padre != null){
 			this.g += this.padre.h; 
 			this.padre = this.padre.getPadre();
 		}
+		this.padre = save;
 	}
 	public void calcularH(Coordenadas mias, Coordenadas meta){
 		double suma = Math.pow((mias.getI()-meta.getI()), 2)+Math.pow((mias.getJ()-meta.getJ()), 2);
@@ -48,7 +50,6 @@ public class TNodo {
 		return this.padre;
 	}
 	public void setPadre(TNodo padre){
-		System.out.println("Cambio al padre");
 		this.padre = padre;
 	}
 	
