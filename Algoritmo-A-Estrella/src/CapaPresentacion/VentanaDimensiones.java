@@ -1,5 +1,6 @@
 package CapaPresentacion;
 
+import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -9,37 +10,40 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import CapaNegocio.Logica;
-
+@SuppressWarnings("serial")
 public class VentanaDimensiones extends JFrame{
+	private JFrame ventana;
+	
+	private JPanel arriba;
+	private JPanel centro;
+	private JPanel abajo;
+	
+	private JLabel infoN;
+	private JLabel infoM;
+	
+	private JTextField textoN;
+	private JTextField textoM;
+	
+	private JButton confirmar;
+	private JButton salir;
+	
 	public VentanaDimensiones(){
-		JFrame ventana = new JFrame("DIMENSIONES");
-		JTextField textoN = new JTextField();
-		JTextField textoM = new JTextField(/*"Introduce el numero de columnas"*/);
+		init();
 		
-		ventana.setSize(420, 200);
-		ventana.setLocationRelativeTo(null);
-		ventana.setLayout(new GridLayout(2, 2));
-		JLabel label = new JLabel();
-		label.setLayout(new FlowLayout());
-		ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		// Añadiendo componentes
-		JButton boton = new JButton("Confirmar");
-		boton.addActionListener(new ActionListener() {
+		this.confirmar = new JButton("Confirmar");
+		this.confirmar.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				ventana.setVisible(false);
 				try{
-					
-					String n1 = textoN.getText();
-					String m1 = textoM.getText();
-					
-					int n = Integer.parseInt(n1);
-					int m = Integer.parseInt(m1);
+					int n = Integer.parseInt(textoN.getText());
+					int m = Integer.parseInt(textoM.getText());
 					Pintar p = new Pintar(n, m);
 				}
 				catch(Exception fallo){
@@ -50,8 +54,8 @@ public class VentanaDimensiones extends JFrame{
 				
 			}
 		});
-		JButton cancelar = new JButton("Salir");
-		cancelar.addActionListener(new ActionListener() {
+		this.salir = new JButton("Salir");
+		this.salir.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -59,15 +63,53 @@ public class VentanaDimensiones extends JFrame{
 			}
 		});
 		
+		this.abajo.add(this.confirmar);
+		this.abajo.add(this.salir);
 		
-		ventana.add(textoN);
-		ventana.add(textoM);
-		ventana.add(label);
-		label.add(boton);
-		label.add(cancelar);
+		this.ventana.add(this.arriba, BorderLayout.NORTH);
+		this.ventana.add(this.centro, BorderLayout.CENTER);
+		this.ventana.add(this.abajo, BorderLayout.SOUTH);
+		this.ventana.setVisible(true);
 		
-		ventana.add(label);
-		ventana.setVisible(true);
+	}
+
+	private void init() {
+		this.ventana = new JFrame("DIMENSIONES");
+		
+		
+		this.ventana.setSize(420, 200);
+		this.ventana.setLocationRelativeTo(null);
+		this.ventana.setLayout(new BorderLayout());
+		this.ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		this.arriba = new JPanel();
+		this.arriba.setLayout(new GridLayout(1, 2));
+		
+		this.infoN = new JLabel("Numero de filas");
+		this.infoM = new JLabel("Numero de columnas");
+		this.arriba.add(this.infoN);
+		this.arriba.add(this.infoM);
+		
+		
+		
+		this.centro = new JPanel();
+		this.centro.setLayout(new GridLayout(1,2));
+		
+		
+		this.textoN = new JTextField();
+		
+		//this.textoN.setBounds(200,  20,  600,  400);
+		this.textoM = new JTextField();
+	
+		
+		this.centro.add(this.textoN);
+		this.centro.add(this.textoM);
+		
+		this.abajo = new JPanel();
+		this.abajo.setLayout(new FlowLayout());
+		
+		
+		
 		
 	}
 }

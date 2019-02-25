@@ -8,7 +8,6 @@ public class Logica {
 	private int dimensionN;
 	private int dimensionM;
 	private TNodo[][] matriz;
-	//private ArrayList<TNodo> abierta;
 	private ArrayList<TNodo> cerrada;
 	private Coordenadas meta;
 	private Coordenadas inicio;
