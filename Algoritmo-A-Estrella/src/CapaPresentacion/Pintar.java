@@ -110,10 +110,14 @@ public class Pintar extends JFrame{
 			public void actionPerformed(ActionEvent e) {
 				// Comprueba que esten los valores minimos
 				if(comprobarDatosMinimos()){
-					//System.out.println("Meta "+Meta);
 					Logica l = new Logica(n, m, Inicio, Meta, listaBloqueos);
-					for(int i = 0; i < l.getListaCamino().size(); i++){
-						matrizBotones[l.getListaCamino().get(i)].setBackground(Color.ORANGE);
+					if(l.getListaCamino().isEmpty()){
+						JOptionPane.showMessageDialog(null, "No se pudo llegar a la meta");
+					}
+					else {
+						for (int i = 0; i < l.getListaCamino().size(); i++) {
+							matrizBotones[l.getListaCamino().get(i)].setBackground(Color.ORANGE);
+						}
 					}
 					iniciar.setEnabled(false);
 				}

@@ -12,6 +12,7 @@ public class Logica {
 	private Coordenadas meta;
 	private Coordenadas inicio;
 	private Coordenadas actual;
+	private boolean noPudo;
 	
 	// Tiene que ordenar en funcion de la f() de menor a mayor
 	private PriorityQueue <TNodo> abierta;
@@ -22,6 +23,7 @@ public class Logica {
 		// Inicializo los atributos 
 		this.dimensionM = m;
 		this.dimensionN = n;
+		this.noPudo = false;
 		this.listaCamino = new ArrayList<>();
 		Comparator<TNodo> comparardor = new Comparator<TNodo>() {
 
@@ -67,43 +69,42 @@ public class Logica {
 				this.matriz[i][j] = nodo;				
 			}
 		}
-		//this.matriz[0][1].setTipo(Tipos.PROHIBIDO);
-		//this.generarTableroAleatoriamente();
-		// Asignar valores
 		
 		
+		// Asignar valores		
 		this.calcularCamino();
-		int i = 1;
-		System.out.println("Pintamos el camino para llegar");
-		TNodo nod = this.matriz[this.actual.getI()][this.actual.getJ()];
-		System.out.println("Coordenadas: "+ i +  " I: "+ this.actual.getI()  +" J: " + this.actual.getJ());
-		this.listaCamino.add(nod.getIndice());
-		i++;
 		
-		// Pensarlo
-		boolean cambiar = true;
-		boolean salir = false;
-		while(!salir){
-			if(cambiar){	
-				this.actual.setI(nod.getPadre().getC().getI());
-				this.actual.setJ(nod.getPadre().getC().getJ());
-				System.out.println("Coordenadas: "+ i +  " I: "+ this.actual.getI()  +" J: " + this.actual.getJ());
-				this.listaCamino.add(this.matriz[this.actual.getI()][this.actual.getJ()].getIndice());
-				nod = this.matriz[this.actual.getI()][this.actual.getJ()].getPadre();
-				if(nod == null){
-					salir = true;
-				}
-				cambiar = false;
-			}
-			else{
-				cambiar = true;
-				this.listaCamino.add(nod.getIndice());
-				System.out.println("Coordenadas: "+ i +  " I: "+ nod.getC().getI()  +" J: " + nod.getC().getJ());
-				if(nod.getPadre() == null){
-					salir = true;
-				}
-			}
+		if (!this.noPudo) {
+			int i = 1;
+			System.out.println("Pintamos el camino para llegar");
+			TNodo nod = this.matriz[this.actual.getI()][this.actual.getJ()];
+			System.out.println("Coordenadas: " + i + " I: " + this.actual.getI() + " J: " + this.actual.getJ());
+			this.listaCamino.add(nod.getIndice());
 			i++;
+
+			boolean cambiar = true;
+			boolean salir = false;
+			while (!salir) {
+				if (cambiar) {
+					this.actual.setI(nod.getPadre().getC().getI());
+					this.actual.setJ(nod.getPadre().getC().getJ());
+					System.out.println("Coordenadas: " + i + " I: " + this.actual.getI() + " J: " + this.actual.getJ());
+					this.listaCamino.add(this.matriz[this.actual.getI()][this.actual.getJ()].getIndice());
+					nod = this.matriz[this.actual.getI()][this.actual.getJ()].getPadre();
+					if (nod == null) {
+						salir = true;
+					}
+					cambiar = false;
+				} else {
+					cambiar = true;
+					this.listaCamino.add(nod.getIndice());
+					System.out.println("Coordenadas: " + i + " I: " + nod.getC().getI() + " J: " + nod.getC().getJ());
+					if (nod.getPadre() == null) {
+						salir = true;
+					}
+				}
+				i++;
+			}
 		}
 		System.out.println("FIN del PROGRAMA");
 	}
@@ -207,20 +208,31 @@ public class Logica {
 					}
 				}
 			}
-			coge = this.abierta.peek();
-			System.out.println("Coordenadas " + coge.getC().getI() + " " + coge.getC().getJ());
-			
-			// Compruebo que no he llegado a la meta
-			if (coge.getC().getI() == this.meta.getI() && coge.getC().getJ() == this.meta.getJ()) {
-				salir = true;
-			}
+			if(!this.abierta.isEmpty()){
+				coge = this.abierta.peek();
+				System.out.println("Coordenadas " + coge.getC().getI() + " " + coge.getC().getJ());
+				
+				// Compruebo que no he llegado a la meta
+				if (coge.getC().getI() == this.meta.getI() && coge.getC().getJ() == this.meta.getJ()) {
+					salir = true;
+				}
+				if(this.abierta.isEmpty() && coge.getC().getI() != this.meta.getI() && coge.getC().getJ() != this.meta.getJ()){
+					salir = true;
+					this.noPudo = true;
+				}
 
-			// Elegir el siguiente nodo a tratar
-			this.actual = coge.getC();
-			this.abierta.poll();
-			this.cerrada.add(coge);
+				// Elegir el siguiente nodo a tratar
+				this.actual = coge.getC();
+				this.abierta.poll();
+				this.cerrada.add(coge);
+			}
+			else{
+				if(this.abierta.isEmpty() && this.actual.getI() != this.meta.getI() && this.actual.getJ() != this.meta.getJ()){
+					salir = true;
+					this.noPudo = true;
+				}
+			}	
 		}
-		
 	}
 	public void hacerLoMismo(TNodo coge, Coordenadas aux){
 		// No tenemos que haber pasado por ahi
@@ -233,13 +245,17 @@ public class Logica {
 			this.matriz[aux.getI()][aux.getJ()].calcularF();
 			this.abierta.add(this.matriz[aux.getI()][aux.getJ()]);
 		}
-	}
-	
-	public int getN(){
-		return this.dimensionN;
-	}
-	public int getM(){
-		return this.dimensionM;
+		else if(this.matriz[aux.getI()][aux.getJ()].getUsado()&& this.matriz[aux.getI()][aux.getJ()].getTipo() != Tipos.PROHIBIDO ){
+			TNodo padre = this.matriz[this.actual.getI()][this.actual.getJ()];
+			TNodo save = this.matriz[aux.getI()][aux.getJ()];
+			
+			this.matriz[aux.getI()][aux.getJ()].setPadre(padre);
+			
+			this.matriz[aux.getI()][aux.getJ()].calcularG();
+			if(save.getG() < this.matriz[aux.getI()][aux.getJ()].getG()){
+				this.matriz[aux.getI()][aux.getJ()].setPadre(save.getPadre());
+			}
+		}
 	}
 	
 	public TNodo[][] getMatriz(){

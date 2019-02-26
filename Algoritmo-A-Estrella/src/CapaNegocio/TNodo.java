@@ -22,18 +22,28 @@ public class TNodo {
 	}
 
 	public void calcularG(){
-		this.g = this.h;
-		TNodo save = this.padre;
-		while(this.padre != null){
-			this.g += this.padre.h; 
-			this.padre = this.padre.getPadre();
+		this.g = 0;
+		TNodo primero = this.padre;
+		TNodo segundo = this;
+		while(primero != null){
+			
+			Coordenadas izq = primero.getC();
+			Coordenadas der = segundo.getC();
+			this.g += calcularRaiz(izq, der);
+			
+			segundo = primero;
+			primero = primero.getPadre();
 		}
-		this.padre = save;
 	}
+	
 	public void calcularH(Coordenadas mias, Coordenadas meta){
+		this.h =calcularRaiz(mias, meta);
+	}
+	
+	private double calcularRaiz(Coordenadas mias, Coordenadas meta){
 		double suma = Math.pow((mias.getI()-meta.getI()), 2)+Math.pow((mias.getJ()-meta.getJ()), 2);
-		this.h = Math.sqrt(suma);
-		
+		double result = Math.sqrt(suma);
+		return result;
 	}
 	public void calcularF(){
 		this.f = this.h+this.g;
