@@ -110,9 +110,12 @@ public class Pintar extends JFrame{
 			public void actionPerformed(ActionEvent e) {
 				// Comprueba que esten los valores minimos
 				if(comprobarDatosMinimos()){
-					System.out.println("Meta "+Meta);
-					Logica l = new Logica(n, m);
-					l.calcularCamino();
+					//System.out.println("Meta "+Meta);
+					Logica l = new Logica(n, m, Inicio, Meta, listaBloqueos);
+					for(int i = 0; i < l.getListaCamino().size(); i++){
+						matrizBotones[l.getListaCamino().get(i)].setBackground(Color.ORANGE);
+					}
+					iniciar.setEnabled(false);
 				}
 				else{
 					JOptionPane.showMessageDialog(null, "Falta la meta o el inicio o ambos(colores amarillo y verde)");
@@ -147,11 +150,6 @@ public class Pintar extends JFrame{
 		this.ventanaPrincipal.add(this.abajo, BorderLayout.SOUTH);
 		
 		this.ventanaPrincipal.setVisible(true);
-		
-		
-		
-		
-		
 	}
 	
 	private void init() {

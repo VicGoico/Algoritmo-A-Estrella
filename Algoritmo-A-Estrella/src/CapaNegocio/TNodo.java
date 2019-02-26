@@ -1,6 +1,7 @@
 package CapaNegocio;
 
 public class TNodo {
+	private int indice;
 	private boolean usado;
 	private double h; 	// Formula h(n) = sqrt((x1-x2)^2+(y1-y2)^2)
 	private double g;	// Formula g(n) = SUMA(h(n))
@@ -9,13 +10,14 @@ public class TNodo {
 	private TNodo padre;
 	private Coordenadas c;
 	
-	public TNodo(boolean usado, double h, double g, double f, Tipos tipo, Coordenadas c){
+	public TNodo(boolean usado, double h, double g, double f, Tipos tipo, Coordenadas c, int indice){
 		this.usado = usado;
 		this.h = h;
 		this.g = g;
 		this.f = f;
 		this.tipo = Tipos.BUENO;
 		this.c = c;
+		this.indice = indice;
 		this.padre = null;
 	}
 
@@ -89,6 +91,14 @@ public class TNodo {
 
 	public void setF(double f) {
 		this.f = f;
+	}
+	
+	public int getIndice(){
+		return this.indice;
+	}
+	
+	public void setIndice(int indice){
+		this.indice = indice;
 	}
 	// Acaban los setter y getters
 	

@@ -16,10 +16,13 @@ public class Logica {
 	// Tiene que ordenar en funcion de la f() de menor a mayor
 	private PriorityQueue <TNodo> abierta;
 	
-	public Logica(int n, int m){
+	private ArrayList<Integer> listaCamino;
+	
+	public Logica(int n, int m, int Inicio, int Meta, ArrayList<Integer> listaBloqueos){
 		// Inicializo los atributos 
 		this.dimensionM = m;
 		this.dimensionN = n;
+		this.listaCamino = new ArrayList<>();
 		Comparator<TNodo> comparardor = new Comparator<TNodo>() {
 
 			@Override
@@ -38,44 +41,66 @@ public class Logica {
 		this.meta = new Coordenadas(1,3);
 		
 		
+		int indice = 0;
 		
 		// Falta poner zonas de paso: prohibidas, con penalizacion, etc
 		for(int i = 0; i < n; i++){
 			for(int j = 0;j < m; j++){
+				boolean encontrado = false;
 				Coordenadas c = new Coordenadas(i,j);
-				TNodo nodo = new TNodo(false, 0, 0, 0, Tipos.BUENO, c);
-				
+				TNodo nodo = new TNodo(false, 0, 0, 0, Tipos.BUENO, c, indice);
+				if(indice == Inicio){
+					this.inicio = nodo.getC();
+				}
+				else if(indice == Meta){
+					this.meta = nodo.getC();
+				}
+				else{
+					for(int k = 0; k < listaBloqueos.size() && !encontrado; k++){
+						if(indice == listaBloqueos.get(k)){
+							encontrado = true;
+							nodo.setTipo(Tipos.PROHIBIDO);
+						}
+					}
+				}
+				indice++;
 				this.matriz[i][j] = nodo;				
 			}
 		}
-		this.matriz[0][1].setTipo(Tipos.PROHIBIDO);
-		this.generarTableroAleatoriamente();
+		//this.matriz[0][1].setTipo(Tipos.PROHIBIDO);
+		//this.generarTableroAleatoriamente();
+		// Asignar valores
+		
+		
 		this.calcularCamino();
 		int i = 1;
 		System.out.println("Pintamos el camino para llegar");
 		TNodo nod = this.matriz[this.actual.getI()][this.actual.getJ()];
 		System.out.println("Coordenadas: "+ i +  " I: "+ this.actual.getI()  +" J: " + this.actual.getJ());
+		this.listaCamino.add(nod.getIndice());
 		i++;
 		
 		// Pensarlo
 		boolean cambiar = true;
-		boolean salirLOKO = false;
-		while(/*nod.getPadre() != null && nod != null*/!salirLOKO){
+		boolean salir = false;
+		while(!salir){
 			if(cambiar){	
 				this.actual.setI(nod.getPadre().getC().getI());
 				this.actual.setJ(nod.getPadre().getC().getJ());
 				System.out.println("Coordenadas: "+ i +  " I: "+ this.actual.getI()  +" J: " + this.actual.getJ());
+				this.listaCamino.add(this.matriz[this.actual.getI()][this.actual.getJ()].getIndice());
 				nod = this.matriz[this.actual.getI()][this.actual.getJ()].getPadre();
 				if(nod == null){
-					salirLOKO = true;
+					salir = true;
 				}
 				cambiar = false;
 			}
 			else{
 				cambiar = true;
+				this.listaCamino.add(nod.getIndice());
 				System.out.println("Coordenadas: "+ i +  " I: "+ nod.getC().getI()  +" J: " + nod.getC().getJ());
 				if(nod.getPadre() == null){
-					salirLOKO = true;
+					salir = true;
 				}
 			}
 			i++;
@@ -222,6 +247,9 @@ public class Logica {
 	}
 	public TNodo getTNodoEspecifico(int i, int j){
 		return this.matriz[i][j];
+	}
+	public ArrayList<Integer> getListaCamino(){
+		return this.listaCamino;
 	}
 	
 }
