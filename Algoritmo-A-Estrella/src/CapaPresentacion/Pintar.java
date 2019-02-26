@@ -148,6 +148,10 @@ public class Pintar extends JFrame{
 		
 		this.ventanaPrincipal.setVisible(true);
 		
+		
+		
+		
+		
 	}
 	
 	private void init() {
