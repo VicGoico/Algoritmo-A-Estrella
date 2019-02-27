@@ -14,6 +14,8 @@ public class Logica {
 	private Coordenadas actual;
 	private boolean noPudo;
 	
+	
+	
 	// Tiene que ordenar en funcion de la f() de menor a mayor
 	private PriorityQueue <TNodo> abierta;
 	
