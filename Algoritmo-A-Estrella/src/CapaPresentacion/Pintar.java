@@ -29,7 +29,7 @@ public class Pintar extends JFrame{
 	
 	// Para elegir el inicio, la meta y los obstaculos
 	private int Inicio = -1;
-	private int Meta = -2;
+	private ArrayList<Integer> Meta;
 	private ArrayList<Integer> listaBloqueos;
 	
 	public Pintar(int n, int m){
@@ -53,18 +53,69 @@ public class Pintar extends JFrame{
 					String [] a = s.split(" ");
 					int indice = Integer.parseInt(a[1]);
 					// Para elegir el INICIO
-					if(Inicio == -1 && indice != Meta){
+					if(Inicio == -1){
 						matrizBotones[indice].setBackground(Color.GREEN);
 						Inicio = indice;
 					}
+					else{
+						if(matrizBotones[indice].getBackground() == Color.BLUE && Inicio != indice){
+							matrizBotones[Inicio].setBackground(Color.BLUE);
+							matrizBotones[indice].setBackground(Color.GREEN);
+							Inicio = indice;
+						}
+						else if( Inicio == indice){
+							matrizBotones[indice].setBackground(Color.BLUE);
+							Inicio  = -1;
+						}
+					}
 					// Para elegir la META
-					else if(Meta == -2 && indice != Inicio){
+					if(matrizBotones[indice].getBackground() != Color.GREEN && matrizBotones[indice].getBackground() != Color.RED){
+						boolean sal = false;
+						for(int i = 0; i < Meta.size() && !sal; i++){
+							if(indice == Meta.get(i)){
+								sal = true;
+								Meta.remove(i);
+							}
+						}
+						if(!sal){
+							matrizBotones[indice].setBackground(Color.YELLOW);
+							Meta.add(indice);
+						}
+						else{
+							matrizBotones[indice].setBackground(Color.BLUE);
+						}
 						
-						matrizBotones[indice].setBackground(Color.YELLOW);
-						Meta = indice;
+					}
+					else {
+						boolean sal = false;
+						for(int i = 0; i < Meta.size() && !sal; i++){
+							if(indice == Meta.get(i)){
+								sal = true;
+								Meta.remove(i);
+								matrizBotones[indice].setBackground(Color.BLUE);
+							}
+						}
 					}
 					// Para elegir los PROHIBIDOS
-					else if(Inicio != -1 && Inicio != indice && Meta != indice && Meta != -2){
+					if(matrizBotones[indice].getBackground() != Color.GREEN && matrizBotones[indice].getBackground() != Color.YELLOW){
+						boolean sal = false;
+						for(int i = 0;i<listaBloqueos.size() && !sal; i++){
+							if(indice == listaBloqueos.get(i)){
+								sal = true;
+								listaBloqueos.remove(i);
+							}
+						}
+						// Lo añado
+						if(!sal){
+							matrizBotones[indice].setBackground(Color.RED);
+							listaBloqueos.add(indice);
+						}
+						// Lo elimino
+						else{
+							matrizBotones[indice].setBackground(Color.BLUE);
+						}
+					}
+					/*if(Inicio != -1 && Inicio != indice && Meta != indice && Meta != -2){
 						boolean puede =true;
 						int save = 0;
 						for(int i = 0; i < listaBloqueos.size(); i++){
@@ -84,7 +135,7 @@ public class Pintar extends JFrame{
 							matrizBotones[indice].setBackground(Color.BLUE);
 						}
 					}
-					// Para desmarcar cualquier otra señal
+					/*//*/ Para desmarcar cualquier otra señal
 					else {
 						// Para desmarcar el INICIO
 						if(Inicio == indice){
@@ -96,7 +147,7 @@ public class Pintar extends JFrame{
 							Meta = -2;
 							matrizBotones[indice].setBackground(Color.BLUE);
 						}						
-					}
+					}*/
 				}
 			});
 			
@@ -128,7 +179,7 @@ public class Pintar extends JFrame{
 
 			private boolean comprobarDatosMinimos() {
 				if(Inicio != -1){
-					if(Meta != -1){
+					if(!Meta.isEmpty()){
 						return true;
 					}
 				}

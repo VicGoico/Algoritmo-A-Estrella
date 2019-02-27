@@ -9,6 +9,7 @@ public class TNodo {
 	private Tipos tipo;
 	private TNodo padre;
 	private Coordenadas c;
+	private double distanciaT;
 	
 	public TNodo(boolean usado, double h, double g, double f, Tipos tipo, Coordenadas c, int indice){
 		this.usado = usado;
@@ -19,6 +20,7 @@ public class TNodo {
 		this.c = c;
 		this.indice = indice;
 		this.padre = null;
+		this.distanciaT = 0;
 	}
 
 	public void calcularG(){
@@ -49,8 +51,15 @@ public class TNodo {
 		this.f = this.h+this.g;
 	}
 	
-	
 	// Empiezan los getters y los setters
+	public double getDistancia(){
+		return this.distanciaT;
+	}
+	public void setDistancia(double dist){
+		this.distanciaT = dist;
+	}
+	
+	
 	public Coordenadas getC(){
 		return this.c;
 	}

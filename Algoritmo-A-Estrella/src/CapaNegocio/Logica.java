@@ -15,18 +15,19 @@ public class Logica {
 	private boolean noPudo;
 	
 	
-	
 	// Tiene que ordenar en funcion de la f() de menor a mayor
 	private PriorityQueue <TNodo> abierta;
 	
 	private ArrayList<Integer> listaCamino;
+	private ArrayList<Integer> listaMetas;
 	
-	public Logica(int n, int m, int Inicio, int Meta, ArrayList<Integer> listaBloqueos){
+	public Logica(int n, int m, int Inicio, ArrayList<Integer> Meta, ArrayList<Integer> listaBloqueos){
 		// Inicializo los atributos 
 		this.dimensionM = m;
 		this.dimensionN = n;
 		this.noPudo = false;
 		this.listaCamino = new ArrayList<>();
+		this.listaMetas = new ArrayList<>();
 		Comparator<TNodo> comparardor = new Comparator<TNodo>() {
 
 			@Override
@@ -56,9 +57,6 @@ public class Logica {
 				if(indice == Inicio){
 					this.inicio = nodo.getC();
 				}
-				else if(indice == Meta){
-					this.meta = nodo.getC();
-				}
 				else{
 					for(int k = 0; k < listaBloqueos.size() && !encontrado; k++){
 						if(indice == listaBloqueos.get(k)){
@@ -71,8 +69,12 @@ public class Logica {
 				this.matriz[i][j] = nodo;				
 			}
 		}
+		this.listaMetas = Meta;
 		
-		
+		// aqui es donde va la chicha
+		while(!this.listaMetas.isEmpty()){
+			
+		}
 		// Asignar valores		
 		this.calcularCamino();
 		
@@ -153,15 +155,16 @@ public class Logica {
 					aux.setI(this.actual.getI() - 1);
 					aux.setJ(this.actual.getJ() - 1);
 					if (aux.getI() >= 0 && aux.getJ() >= 0) {// Esta bien
+												
 						coge = this.matriz[aux.getI()][aux.getJ()];
-						hacerLoMismo(coge, aux);
+						hacerLoMismo(coge, aux, true);
 					}
 				} else if (i == 1) {// Arriba
 					aux.setI(this.actual.getI() - 1);
 					aux.setJ(this.actual.getJ());
 					if (aux.getI() >= 0) {// Esta bien
 						coge = this.matriz[aux.getI()][aux.getJ()];
-						hacerLoMismo(coge, aux);
+						hacerLoMismo(coge, aux, false);
 					}
 				} else if (i == 2) {// Arriba a la derecha
 					aux.setI(this.actual.getI() - 1);
@@ -169,21 +172,21 @@ public class Logica {
 					if (aux.getI() >= 0 && aux.getJ() < this.dimensionM) {// Esta
 																			// bien
 						coge = this.matriz[aux.getI()][aux.getJ()];
-						hacerLoMismo(coge, aux);
+						hacerLoMismo(coge, aux, true);
 					}
 				} else if (i == 3) {// Izquierda
 					aux.setI(this.actual.getI());
 					aux.setJ(this.actual.getJ() - 1);
 					if (aux.getJ() >= 0) {// Esta bien
 						coge = this.matriz[aux.getI()][aux.getJ()];
-						hacerLoMismo(coge, aux);
+						hacerLoMismo(coge, aux, false);
 					}
 				} else if (i == 4) {// Derecha
 					aux.setI(this.actual.getI());
 					aux.setJ(this.actual.getJ() + 1);
 					if (aux.getJ() < this.dimensionM) {// Esta bien
 						coge = this.matriz[aux.getI()][aux.getJ()];
-						hacerLoMismo(coge, aux);
+						hacerLoMismo(coge, aux, false);
 					}
 				} else if (i == 5) {// Izquierda inferior
 					aux.setI(this.actual.getI() + 1);
@@ -191,14 +194,14 @@ public class Logica {
 					if (aux.getI() < this.dimensionN && aux.getJ() >= 0) {// Esta
 																			// bien
 						coge = this.matriz[aux.getI()][aux.getJ()];
-						hacerLoMismo(coge, aux);
+						hacerLoMismo(coge, aux, true);
 					}
 				} else if (i == 6) {// Abajo
 					aux.setI(this.actual.getI() + 1);
 					aux.setJ(this.actual.getJ());
 					if (aux.getI() < this.dimensionN) {// Esta bien
 						coge = this.matriz[aux.getI()][aux.getJ()];
-						hacerLoMismo(coge, aux);
+						hacerLoMismo(coge, aux, false);
 					}
 				} else if (i == 7) {// Derecha inferior
 					aux.setI(this.actual.getI() + 1);
@@ -206,10 +209,12 @@ public class Logica {
 					if (aux.getI() < this.dimensionN && aux.getJ() < this.dimensionM) {// Esta
 																						// bien
 						coge = this.matriz[aux.getI()][aux.getJ()];
-						hacerLoMismo(coge, aux);
+						hacerLoMismo(coge, aux, true);
 					}
 				}
 			}
+			
+			// Comprobaciones
 			if(!this.abierta.isEmpty()){
 				coge = this.abierta.peek();
 				System.out.println("Coordenadas " + coge.getC().getI() + " " + coge.getC().getJ());
@@ -217,10 +222,6 @@ public class Logica {
 				// Compruebo que no he llegado a la meta
 				if (coge.getC().getI() == this.meta.getI() && coge.getC().getJ() == this.meta.getJ()) {
 					salir = true;
-				}
-				if(this.abierta.isEmpty() && coge.getC().getI() != this.meta.getI() && coge.getC().getJ() != this.meta.getJ()){
-					salir = true;
-					this.noPudo = true;
 				}
 
 				// Elegir el siguiente nodo a tratar
@@ -236,28 +237,38 @@ public class Logica {
 			}	
 		}
 	}
-	public void hacerLoMismo(TNodo coge, Coordenadas aux){
+	public void hacerLoMismo(TNodo coge, Coordenadas aux, boolean sumar){
 		// No tenemos que haber pasado por ahi
 		if(!this.matriz[aux.getI()][aux.getJ()].getUsado() && this.matriz[aux.getI()][aux.getJ()].getTipo() != Tipos.PROHIBIDO){
-			coge.setUsado(true);
+			this.matriz[aux.getI()][aux.getJ()].setUsado(true);
 			TNodo padre = this.matriz[this.actual.getI()][this.actual.getJ()];
 			this.matriz[aux.getI()][aux.getJ()].setPadre(padre);
 			this.matriz[aux.getI()][aux.getJ()].calcularH(aux, this.meta);
 			this.matriz[aux.getI()][aux.getJ()].calcularG();
 			this.matriz[aux.getI()][aux.getJ()].calcularF();
+			if(sumar){// raiz de 2
+				this.matriz[aux.getI()][aux.getJ()].setDistancia(Math.sqrt(2)+padre.getDistancia());
+			}
+			else{// 1
+				this.matriz[aux.getI()][aux.getJ()].setDistancia(1+padre.getDistancia());
+			}
 			this.abierta.add(this.matriz[aux.getI()][aux.getJ()]);
 		}
-		else if(this.matriz[aux.getI()][aux.getJ()].getUsado()&& this.matriz[aux.getI()][aux.getJ()].getTipo() != Tipos.PROHIBIDO ){
+		// Revisar
+		/*else if(this.matriz[aux.getI()][aux.getJ()].getUsado()){
+			TNodo antiguo = this.matriz[aux.getI()][aux.getJ()];
 			TNodo padre = this.matriz[this.actual.getI()][this.actual.getJ()];
-			TNodo save = this.matriz[aux.getI()][aux.getJ()];
-			
 			this.matriz[aux.getI()][aux.getJ()].setPadre(padre);
-			
-			this.matriz[aux.getI()][aux.getJ()].calcularG();
-			if(save.getG() < this.matriz[aux.getI()][aux.getJ()].getG()){
-				this.matriz[aux.getI()][aux.getJ()].setPadre(save.getPadre());
+			if(sumar){// raiz de 2
+				this.matriz[aux.getI()][aux.getJ()].setDistancia(Math.sqrt(2)+padre.getDistancia());
 			}
-		}
+			else{// 1
+				this.matriz[aux.getI()][aux.getJ()].setDistancia(1+padre.getDistancia());
+			}
+			if(antiguo.getDistancia()<this.matriz[aux.getI()][aux.getJ()].getDistancia()){
+				this.matriz[aux.getI()][aux.getJ()] = antiguo;
+			}
+		}*/
 	}
 	
 	public TNodo[][] getMatriz(){
