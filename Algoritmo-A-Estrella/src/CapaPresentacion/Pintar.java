@@ -10,16 +10,12 @@ import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import CapaNegocio.Logica;
 
 public class Pintar extends JFrame{
-	private int n;
-	private int m;
-	// IMPORTAMTE Esto hay que convertirlo en una matriz
 	private JButton[] matrizBotones;
 	private JFrame ventanaPrincipal;
 	private JPanel arriba;
@@ -29,20 +25,20 @@ public class Pintar extends JFrame{
 	
 	// Para elegir el inicio, la meta y los obstaculos
 	private int Inicio = -1;
-	private ArrayList<Integer> Meta;
+	private ArrayList<Integer> listaMetas;
 	private ArrayList<Integer> listaBloqueos;
 	
 	public Pintar(int n, int m){
 		this.listaBloqueos = new ArrayList<>();
-		this.n = n;
-		this.m = m;
+		this.listaMetas = new ArrayList<>();
 		// Inicializa los botones
-		init();
+		init(n, m);
 		this.matrizBotones = new JButton[n*m];
 		
 		
-		for(int i = 0; i < this.n*this.m; i++){
+		for(int i = 0; i < n*m; i++){
 			this.matrizBotones[i] = new JButton(" " + i + " ");
+			// Pinto por defecto todos los botones de azul
 			this.matrizBotones[i].setBackground(Color.BLUE); 
 			
 			this.matrizBotones[i].addActionListener(new ActionListener() {
@@ -53,53 +49,31 @@ public class Pintar extends JFrame{
 					String [] a = s.split(" ");
 					int indice = Integer.parseInt(a[1]);
 					// Para elegir el INICIO
-					if(Inicio == -1){
+					if(Inicio == -1 && matrizBotones[indice].getBackground() != Color.RED && matrizBotones[indice].getBackground() != Color.YELLOW){
 						matrizBotones[indice].setBackground(Color.GREEN);
 						Inicio = indice;
 					}
-					else{
-						if(matrizBotones[indice].getBackground() == Color.BLUE && Inicio != indice){
-							matrizBotones[Inicio].setBackground(Color.BLUE);
-							matrizBotones[indice].setBackground(Color.GREEN);
-							Inicio = indice;
-						}
-						else if( Inicio == indice){
-							matrizBotones[indice].setBackground(Color.BLUE);
-							Inicio  = -1;
-						}
+					// Para despintar el inicio
+					else if (Inicio == indice) {
+						matrizBotones[indice].setBackground(Color.BLUE);
+						Inicio = -1;
 					}
+
 					// Para elegir la META
-					if(matrizBotones[indice].getBackground() != Color.GREEN && matrizBotones[indice].getBackground() != Color.RED){
-						boolean sal = false;
-						for(int i = 0; i < Meta.size() && !sal; i++){
-							if(indice == Meta.get(i)){
-								sal = true;
-								Meta.remove(i);
+					// Si esta pintado de azul, la cogemos y la pintamos de amarillo
+					else if(matrizBotones[indice].getBackground() == Color.BLUE){				
+						matrizBotones[indice].setBackground(Color.YELLOW);
+						listaMetas.add(indice);						
+					}
+					// Para elegir los PROHIBIDOS, hacer 2 click
+					else if(matrizBotones[indice].getBackground() == Color.YELLOW || matrizBotones[indice].getBackground() == Color.RED){
+						for(int i = 0; i < listaMetas.size(); i++){
+							if(indice == listaMetas.get(i)){
+								listaMetas.remove(i);
 							}
 						}
-						if(!sal){
-							matrizBotones[indice].setBackground(Color.YELLOW);
-							Meta.add(indice);
-						}
-						else{
-							matrizBotones[indice].setBackground(Color.BLUE);
-						}
-						
-					}
-					else {
 						boolean sal = false;
-						for(int i = 0; i < Meta.size() && !sal; i++){
-							if(indice == Meta.get(i)){
-								sal = true;
-								Meta.remove(i);
-								matrizBotones[indice].setBackground(Color.BLUE);
-							}
-						}
-					}
-					// Para elegir los PROHIBIDOS
-					if(matrizBotones[indice].getBackground() != Color.GREEN && matrizBotones[indice].getBackground() != Color.YELLOW){
-						boolean sal = false;
-						for(int i = 0;i<listaBloqueos.size() && !sal; i++){
+						for(int i = 0; i < listaBloqueos.size() && !sal; i++){
 							if(indice == listaBloqueos.get(i)){
 								sal = true;
 								listaBloqueos.remove(i);
@@ -115,39 +89,7 @@ public class Pintar extends JFrame{
 							matrizBotones[indice].setBackground(Color.BLUE);
 						}
 					}
-					/*if(Inicio != -1 && Inicio != indice && Meta != indice && Meta != -2){
-						boolean puede =true;
-						int save = 0;
-						for(int i = 0; i < listaBloqueos.size(); i++){
-							if((listaBloqueos.get(i)) == indice){
-								puede = false;
-								save = i;
-							}
-						}
-						// Para marcar los PROHIBIDOS
-						if(puede){
-							matrizBotones[indice].setBackground(Color.RED);
-							listaBloqueos.add(indice);
-						}
-						// Para desmarcar el PROHIBIDO
-						else{
-							listaBloqueos.remove(save);
-							matrizBotones[indice].setBackground(Color.BLUE);
-						}
-					}
-					/*//*/ Para desmarcar cualquier otra señal
-					else {
-						// Para desmarcar el INICIO
-						if(Inicio == indice){
-							Inicio = -1;
-							matrizBotones[indice].setBackground(Color.BLUE);
-						}
-						// Para desmarcar la META
-						else if(Meta == indice){
-							Meta = -2;
-							matrizBotones[indice].setBackground(Color.BLUE);
-						}						
-					}*/
+					
 				}
 			});
 			
@@ -161,13 +103,22 @@ public class Pintar extends JFrame{
 			public void actionPerformed(ActionEvent e) {
 				// Comprueba que esten los valores minimos
 				if(comprobarDatosMinimos()){
-					Logica l = new Logica(n, m, Inicio, Meta, listaBloqueos);
+					ArrayList<Integer> aux = new ArrayList<>();
+					for(int i = 0; i < listaMetas.size(); i++){
+						aux.add(listaMetas.get(i));
+					}
+					Logica l = new Logica(n, m, Inicio, listaMetas, listaBloqueos);
 					if(l.getListaCamino().isEmpty()){
 						JOptionPane.showMessageDialog(null, "No se pudo llegar a la meta");
 					}
 					else {
 						for (int i = 0; i < l.getListaCamino().size(); i++) {
-							matrizBotones[l.getListaCamino().get(i)].setBackground(Color.ORANGE);
+							matrizBotones[l.getListaCamino().get(i)].setBackground(Color.WHITE);
+						}
+						// Repinto el inicio y las metas
+						matrizBotones[Inicio].setBackground(Color.GREEN);
+						for(int i = 0; i < aux.size(); i++){
+							matrizBotones[aux.get(i)].setBackground(Color.YELLOW);
 						}
 					}
 					iniciar.setEnabled(false);
@@ -179,7 +130,7 @@ public class Pintar extends JFrame{
 
 			private boolean comprobarDatosMinimos() {
 				if(Inicio != -1){
-					if(!Meta.isEmpty()){
+					if(!listaMetas.isEmpty()){
 						return true;
 					}
 				}
@@ -207,7 +158,7 @@ public class Pintar extends JFrame{
 		this.ventanaPrincipal.setVisible(true);
 	}
 	
-	private void init() {
+	private void init(int n, int m) {
 		this.ventanaPrincipal = new JFrame("Algoritmo A Estrella");
 		this.ventanaPrincipal.setLocationRelativeTo(null);
 		this.ventanaPrincipal.setSize(420, 200);

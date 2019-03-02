@@ -13,71 +13,71 @@ public class Logica {
 	private Coordenadas inicio;
 	private Coordenadas actual;
 	private boolean noPudo;
-	
+	private boolean finBucle;
 	
 	// Tiene que ordenar en funcion de la f() de menor a mayor
 	private PriorityQueue <TNodo> abierta;
 	
 	private ArrayList<Integer> listaCamino;
-	private ArrayList<Integer> listaMetas;
 	
-	public Logica(int n, int m, int Inicio, ArrayList<Integer> Meta, ArrayList<Integer> listaBloqueos){
-		// Inicializo los atributos 
+	
+	public Logica(int n, int m, int Inicio, ArrayList<Integer> listaMetas, ArrayList<Integer> listaBloqueos){
 		this.dimensionM = m;
 		this.dimensionN = n;
 		this.noPudo = false;
+		this.finBucle = false;
 		this.listaCamino = new ArrayList<>();
-		this.listaMetas = new ArrayList<>();
-		Comparator<TNodo> comparardor = new Comparator<TNodo>() {
-
-			@Override
-			public int compare(TNodo o1, TNodo o2) {
-				if(o1.getF() < o2.getF()){
-					return 0;// A lo mejor -1
+		
+		
+		inicializar(Inicio, listaBloqueos);	
+		// Inicializo la meta
+		int siguienteMeta = 0;
+		
+		int indiceDeMeta = listaMetas.get(siguienteMeta);
+		for(int i = 0; i < this.dimensionN; i++){
+			for(int j = 0; j < this.dimensionM; j++){
+				if(indiceDeMeta == this.matriz[i][j].getIndice()){
+					this.meta = this.matriz[i][j].getC();
 				}
-				return 1;
 			}
-			
-		};
-		this.abierta = new PriorityQueue<>(comparardor);
-		this.cerrada = new ArrayList<>();
-		this.matriz = new TNodo[n][m];
-		this.inicio = new Coordenadas(0,0);
-		this.meta = new Coordenadas(1,3);
-		
-		
-		int indice = 0;
-		
-		// Falta poner zonas de paso: prohibidas, con penalizacion, etc
-		for(int i = 0; i < n; i++){
-			for(int j = 0;j < m; j++){
-				boolean encontrado = false;
-				Coordenadas c = new Coordenadas(i,j);
-				TNodo nodo = new TNodo(false, 0, 0, 0, Tipos.BUENO, c, indice);
-				if(indice == Inicio){
-					this.inicio = nodo.getC();
-				}
-				else{
-					for(int k = 0; k < listaBloqueos.size() && !encontrado; k++){
-						if(indice == listaBloqueos.get(k)){
-							encontrado = true;
-							nodo.setTipo(Tipos.PROHIBIDO);
-						}
-					}
-				}
-				indice++;
-				this.matriz[i][j] = nodo;				
-			}
-		}
-		this.listaMetas = Meta;
-		
-		// aqui es donde va la chicha
-		while(!this.listaMetas.isEmpty()){
-			
 		}
 		// Asignar valores		
 		this.calcularCamino();
+		cogerCamino();
+		if(listaMetas.isEmpty()){
+			this.noPudo = true;
+		}
 		
+		// aqui es donde va la chicha
+		while(!this.noPudo && !listaMetas.isEmpty() && !this.finBucle){			
+			Inicio = listaMetas.get(siguienteMeta);
+			listaMetas.remove(siguienteMeta);
+			inicializar(Inicio, listaBloqueos);	
+			if(!listaMetas.isEmpty()){
+				indiceDeMeta = listaMetas.get(siguienteMeta);
+				for(int i = 0; i < this.dimensionN; i++){
+					for(int j = 0; j < this.dimensionM; j++){
+						if(indiceDeMeta == this.matriz[i][j].getIndice()){
+							this.meta = this.matriz[i][j].getC();
+						}
+					}
+				}
+				// Asignar valores		
+				this.calcularCamino();
+				cogerCamino();
+			}
+			// La lista de mestas esta vacia, por tanto, hemos recorrido todas las metas
+			else {
+				this.finBucle = true;
+			}
+		}
+		
+		
+		
+		System.out.println("FIN del PROGRAMA");
+	}
+	
+	private void cogerCamino() {
 		if (!this.noPudo) {
 			int i = 1;
 			System.out.println("Pintamos el camino para llegar");
@@ -110,9 +110,54 @@ public class Logica {
 				i++;
 			}
 		}
-		System.out.println("FIN del PROGRAMA");
 	}
-	
+
+	private void inicializar(int Inicio, ArrayList<Integer> listaBloqueos) {
+		
+		
+		Comparator<TNodo> comparardor = new Comparator<TNodo>() {
+
+			@Override
+			public int compare(TNodo o1, TNodo o2) {
+				if(o1.getF() < o2.getF()){
+					return 0;// A lo mejor -1
+				}
+				return 1;
+			}
+			
+		};
+		this.abierta = new PriorityQueue<>(comparardor);
+		this.cerrada = new ArrayList<>();
+		this.matriz = new TNodo[this.dimensionN][this.dimensionM];
+		this.inicio = new Coordenadas(0,0);
+		this.meta = new Coordenadas(1,3);
+		
+		
+		int indice = 0;
+		
+		// Falta poner zonas de paso: prohibidas, con penalizacion, etc
+		for(int i = 0; i < this.dimensionN; i++){
+			for(int j = 0;j < this.dimensionM; j++){
+				boolean encontrado = false;
+				Coordenadas c = new Coordenadas(i,j);
+				TNodo nodo = new TNodo(false, 0, 0, 0, Tipos.BUENO, c, indice);
+				if(indice == Inicio){
+					this.inicio = nodo.getC();
+				}
+				else{
+					for(int k = 0; k < listaBloqueos.size() && !encontrado; k++){
+						if(indice == listaBloqueos.get(k)){
+							encontrado = true;
+							nodo.setTipo(Tipos.PROHIBIDO);
+						}
+					}
+				}
+				indice++;
+				this.matriz[i][j] = nodo;				
+			}
+		}
+	}
+
 	public void generarTableroAleatoriamente(){
 		/*this.inicio.setI((int) (Math.random()*this.dimensionN));
 		this.inicio.setJ((int) (Math.random()*this.dimensionM));
@@ -223,7 +268,7 @@ public class Logica {
 				if (coge.getC().getI() == this.meta.getI() && coge.getC().getJ() == this.meta.getJ()) {
 					salir = true;
 				}
-
+				
 				// Elegir el siguiente nodo a tratar
 				this.actual = coge.getC();
 				this.abierta.poll();
@@ -240,18 +285,18 @@ public class Logica {
 	public void hacerLoMismo(TNodo coge, Coordenadas aux, boolean sumar){
 		// No tenemos que haber pasado por ahi
 		if(!this.matriz[aux.getI()][aux.getJ()].getUsado() && this.matriz[aux.getI()][aux.getJ()].getTipo() != Tipos.PROHIBIDO){
-			this.matriz[aux.getI()][aux.getJ()].setUsado(true);
+			coge.setUsado(true);
 			TNodo padre = this.matriz[this.actual.getI()][this.actual.getJ()];
 			this.matriz[aux.getI()][aux.getJ()].setPadre(padre);
 			this.matriz[aux.getI()][aux.getJ()].calcularH(aux, this.meta);
 			this.matriz[aux.getI()][aux.getJ()].calcularG();
 			this.matriz[aux.getI()][aux.getJ()].calcularF();
-			if(sumar){// raiz de 2
+			/*if(sumar){// raiz de 2
 				this.matriz[aux.getI()][aux.getJ()].setDistancia(Math.sqrt(2)+padre.getDistancia());
 			}
 			else{// 1
 				this.matriz[aux.getI()][aux.getJ()].setDistancia(1+padre.getDistancia());
-			}
+			}*/
 			this.abierta.add(this.matriz[aux.getI()][aux.getJ()]);
 		}
 		// Revisar
