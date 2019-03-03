@@ -24,13 +24,16 @@ public class Pintar extends JFrame{
 	private JButton salir;
 	
 	// Para elegir el inicio, la meta y los obstaculos
-	private int Inicio = -1;
-	private ArrayList<Integer> listaMetas;
-	private ArrayList<Integer> listaBloqueos;
+	private int Inicio = -1;						// Color VERDE
+	private ArrayList<Integer> listaMetas;			// Color AMARILLO
+	private ArrayList<Integer> listaBloqueos;		// Color ROJO
+	private ArrayList<Integer> listaPenalizaciones; // Color GRIS
 	
 	public Pintar(int n, int m){
-		this.listaBloqueos = new ArrayList<>();
 		this.listaMetas = new ArrayList<>();
+		this.listaBloqueos = new ArrayList<>();
+		this.listaPenalizaciones = new ArrayList<>();
+		
 		// Inicializa los botones
 		init(n, m);
 		this.matrizBotones = new JButton[n*m];
@@ -65,24 +68,34 @@ public class Pintar extends JFrame{
 						matrizBotones[indice].setBackground(Color.YELLOW);
 						listaMetas.add(indice);						
 					}
-					// Para elegir los PROHIBIDOS, hacer 2 click
-					else if(matrizBotones[indice].getBackground() == Color.YELLOW || matrizBotones[indice].getBackground() == Color.RED){
+					// Para elegir los PROHIBIDOS, hacer 2 clicks
+					else if(matrizBotones[indice].getBackground() == Color.YELLOW){
 						for(int i = 0; i < listaMetas.size(); i++){
 							if(indice == listaMetas.get(i)){
 								listaMetas.remove(i);
 							}
 						}
-						boolean sal = false;
-						for(int i = 0; i < listaBloqueos.size() && !sal; i++){
+						matrizBotones[indice].setBackground(Color.RED);
+						listaBloqueos.add(indice);
+					}
+					// Para elegir las PENALIZACIONES, hacer 3 clicks
+					else if(matrizBotones[indice].getBackground() == Color.RED || matrizBotones[indice].getBackground() == Color.DARK_GRAY){
+						for(int i = 0; i < listaBloqueos.size(); i++){
 							if(indice == listaBloqueos.get(i)){
-								sal = true;
 								listaBloqueos.remove(i);
+							}
+						}
+						boolean sal = false;
+						for(int i = 0; i < listaPenalizaciones.size() && !sal; i++){
+							if(indice == listaPenalizaciones.get(i)){
+								sal = true;
+								listaPenalizaciones.remove(i);
 							}
 						}
 						// Lo añado
 						if(!sal){
-							matrizBotones[indice].setBackground(Color.RED);
-							listaBloqueos.add(indice);
+							matrizBotones[indice].setBackground(Color.DARK_GRAY);
+							listaPenalizaciones.add(indice);
 						}
 						// Lo elimino
 						else{
@@ -103,11 +116,15 @@ public class Pintar extends JFrame{
 			public void actionPerformed(ActionEvent e) {
 				// Comprueba que esten los valores minimos
 				if(comprobarDatosMinimos()){
-					ArrayList<Integer> aux = new ArrayList<>();
+					ArrayList<Integer> metas = new ArrayList<>();
 					for(int i = 0; i < listaMetas.size(); i++){
-						aux.add(listaMetas.get(i));
+						metas.add(listaMetas.get(i));
 					}
-					Logica l = new Logica(n, m, Inicio, listaMetas, listaBloqueos);
+					ArrayList<Integer> penalizaciones = new ArrayList<>();
+					for(int i = 0; i < listaPenalizaciones.size(); i++){
+						penalizaciones.add(listaPenalizaciones.get(i));
+					}
+					Logica l = new Logica(n, m, Inicio, listaMetas, listaBloqueos, listaPenalizaciones);
 					if(l.getListaCamino().isEmpty()){
 						JOptionPane.showMessageDialog(null, "No se pudo llegar a la meta");
 					}
@@ -117,8 +134,11 @@ public class Pintar extends JFrame{
 						}
 						// Repinto el inicio y las metas
 						matrizBotones[Inicio].setBackground(Color.GREEN);
-						for(int i = 0; i < aux.size(); i++){
-							matrizBotones[aux.get(i)].setBackground(Color.YELLOW);
+						for(int i = 0; i < metas.size(); i++){
+							matrizBotones[metas.get(i)].setBackground(Color.YELLOW);
+						}
+						for(int i = 0; i < penalizaciones.size(); i++){
+							matrizBotones[penalizaciones.get(i)].setBackground(Color.DARK_GRAY);
 						}
 					}
 					iniciar.setEnabled(false);

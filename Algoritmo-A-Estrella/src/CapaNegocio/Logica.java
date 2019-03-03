@@ -21,7 +21,7 @@ public class Logica {
 	private ArrayList<Integer> listaCamino;
 	
 	
-	public Logica(int n, int m, int Inicio, ArrayList<Integer> listaMetas, ArrayList<Integer> listaBloqueos){
+	public Logica(int n, int m, int Inicio, ArrayList<Integer> listaMetas, ArrayList<Integer> listaBloqueos, ArrayList<Integer> listaPenalizaciones){
 		this.dimensionM = m;
 		this.dimensionN = n;
 		this.noPudo = false;
@@ -29,7 +29,7 @@ public class Logica {
 		this.listaCamino = new ArrayList<>();
 		
 		
-		inicializar(Inicio, listaBloqueos);	
+		inicializar(Inicio, listaBloqueos, listaPenalizaciones);	
 		// Inicializo la meta
 		int siguienteMeta = 0;
 		
@@ -52,7 +52,7 @@ public class Logica {
 		while(!this.noPudo && !listaMetas.isEmpty() && !this.finBucle){			
 			Inicio = listaMetas.get(siguienteMeta);
 			listaMetas.remove(siguienteMeta);
-			inicializar(Inicio, listaBloqueos);	
+			inicializar(Inicio, listaBloqueos, listaPenalizaciones);	
 			if(!listaMetas.isEmpty()){
 				indiceDeMeta = listaMetas.get(siguienteMeta);
 				for(int i = 0; i < this.dimensionN; i++){
@@ -112,7 +112,7 @@ public class Logica {
 		}
 	}
 
-	private void inicializar(int Inicio, ArrayList<Integer> listaBloqueos) {
+	private void inicializar(int Inicio, ArrayList<Integer> listaBloqueos, ArrayList<Integer> listaPenalizaciones) {
 		
 		
 		Comparator<TNodo> comparardor = new Comparator<TNodo>() {
@@ -149,6 +149,12 @@ public class Logica {
 						if(indice == listaBloqueos.get(k)){
 							encontrado = true;
 							nodo.setTipo(Tipos.PROHIBIDO);
+						}
+					}
+					for(int k = 0; k < listaPenalizaciones.size() && !encontrado; k++){
+						if(indice == listaPenalizaciones.get(k)){
+							encontrado = true;
+							nodo.setTipo(Tipos.PENALIZACION);
 						}
 					}
 				}
