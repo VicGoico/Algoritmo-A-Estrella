@@ -119,9 +119,5 @@ public class TNodo {
 	public void setIndice(int indice){
 		this.indice = indice;
 	}
-	// Acaban los setter y getters
-	
-	
-	
-	
+	// Acaban los setter y getters	
 }

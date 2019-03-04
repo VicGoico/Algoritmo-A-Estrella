@@ -21,13 +21,14 @@ public class Pintar extends JFrame{
 	private JPanel arriba;
 	private JPanel abajo;
 	private JButton iniciar;
+	private JButton limpiar;
 	private JButton salir;
 	
 	// Para elegir el inicio, la meta y los obstaculos
 	private int Inicio = -1;						// Color VERDE
 	private ArrayList<Integer> listaMetas;			// Color AMARILLO
 	private ArrayList<Integer> listaBloqueos;		// Color ROJO
-	private ArrayList<Integer> listaPenalizaciones; // Color GRIS
+	private ArrayList<Integer> listaPenalizaciones; // Color GRIS OSCURO
 	
 	public Pintar(int n, int m){
 		this.listaMetas = new ArrayList<>();
@@ -106,6 +107,7 @@ public class Pintar extends JFrame{
 				}
 			});
 			
+			// Lo añado al panel ARRIBA donde se mostrar mas tarde por pantalla
 			this.arriba.add(this.matrizBotones[i]);
 		}
 		// Creacion del boton INICIAR
@@ -132,7 +134,7 @@ public class Pintar extends JFrame{
 						for (int i = 0; i < l.getListaCamino().size(); i++) {
 							matrizBotones[l.getListaCamino().get(i)].setBackground(Color.WHITE);
 						}
-						// Repinto el inicio y las metas
+						// Repinto el inicio, las metas y las penalizaciones
 						matrizBotones[Inicio].setBackground(Color.GREEN);
 						for(int i = 0; i < metas.size(); i++){
 							matrizBotones[metas.get(i)].setBackground(Color.YELLOW);
@@ -142,6 +144,7 @@ public class Pintar extends JFrame{
 						}
 					}
 					iniciar.setEnabled(false);
+					limpiar.setEnabled(true);
 				}
 				else{
 					JOptionPane.showMessageDialog(null, "Falta la meta o el inicio o ambos(colores amarillo y verde)");
@@ -158,6 +161,21 @@ public class Pintar extends JFrame{
 			}
 		});
 		this.abajo.add(this.iniciar);
+		
+		
+		// Creacion boton limpiar
+		this.limpiar = new JButton("Limpiar");
+		this.limpiar.setEnabled(false);
+		this.limpiar.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				limpiarTablero();
+				limpiar.setEnabled(false);
+				iniciar.setEnabled(true);
+			}
+		});
+		this.abajo.add(this.limpiar);
 		
 		// Creacion del boton SALIR
 		this.salir = new JButton("Salir");
@@ -188,6 +206,15 @@ public class Pintar extends JFrame{
 		this.arriba.setLayout(new GridLayout(n, m));
 		this.abajo = new JPanel();
 		this.abajo.setLayout(new FlowLayout());
+	}
+	private void limpiarTablero(){
+		this.Inicio = -1;
+		this.listaMetas = new ArrayList<>();
+		this.listaBloqueos = new ArrayList<>();
+		this.listaPenalizaciones = new ArrayList<>();
+		for(int i = 0; i < this.matrizBotones.length; i++){
+			this.matrizBotones[i].setBackground(Color.BLUE);
+		}
 	}
 	
 }

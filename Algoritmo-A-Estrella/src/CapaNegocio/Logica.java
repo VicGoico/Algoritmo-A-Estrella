@@ -36,6 +36,7 @@ public class Logica {
 		// Inicializo la meta
 		int siguienteMeta = 0;
 		
+		// Esto es en el caso de que solo hubiera una meta
 		int indiceDeMeta = listaMetas.get(siguienteMeta);
 		for(int i = 0; i < this.dimensionN; i++){
 			for(int j = 0; j < this.dimensionM; j++){
@@ -51,12 +52,17 @@ public class Logica {
 			this.noPudo = true;
 		}
 		
-		// aqui es donde va la chicha
-		while(!this.noPudo && !listaMetas.isEmpty() && !this.finBucle){			
+		// Aqui es donde nos recorremos la ListaDeMetas
+		while(!this.noPudo && !listaMetas.isEmpty() && !this.finBucle){	
+			// Me guardo el Inicio del siguiente camino
 			Inicio = listaMetas.get(siguienteMeta);
+			// Borra la meta antigua de la lista ya que la hemos pasado como inicio
 			listaMetas.remove(siguienteMeta);
-			inicializar(Inicio, listaBloqueos, listaPenalizaciones);	
+			// Inicializo otra vez toda la matriz para volver a calcular todos los posibles caminos
+			inicializar(Inicio, listaBloqueos, listaPenalizaciones);
+			// Compruebo que aun quedan metas o "way points" en la lisat
 			if(!listaMetas.isEmpty()){
+				// Busco las coordenadas de la meta dentro de la matriz
 				indiceDeMeta = listaMetas.get(siguienteMeta);
 				for(int i = 0; i < this.dimensionN; i++){
 					for(int j = 0; j < this.dimensionM; j++){
@@ -69,30 +75,34 @@ public class Logica {
 				this.calcularCamino();
 				cogerCamino();
 			}
-			// La lista de mestas esta vacia, por tanto, hemos recorrido todas las metas
+			// La lista de metas esta vacia, por tanto, hemos recorrido todas las metas y salimos del bucle
 			else {
 				this.finBucle = true;
 			}
 		}
-		
-		
-		
 		System.out.println("FIN del PROGRAMA");
 	}
 	
+	// Metodo que se encarga de guardar el camino que se tiene que recorrer para llegar a la meta
 	private void cogerCamino() {
+		// Si hemos podido llegar a la meta, en caso contrario finalizara la ejecucion
 		if (!this.noPudo) {
+			// Para guardar el principio del camino
 			int i = 1;
 			System.out.println("Pintamos el camino para llegar");
 			TNodo nod = this.matriz[this.actual.getI()][this.actual.getJ()];
 			System.out.println("Coordenadas: " + i + " I: " + this.actual.getI() + " J: " + this.actual.getJ());
+			
 			this.listaCamino.add(nod.getIndice());
 			i++;
 
 			boolean cambiar = true;
 			boolean salir = false;
+			// Esto es una cosa complicada por que en algunas casos cojo al hijo 
+			// y luego al padre y despues de coger al padre cojo al hijo asi hasta acabar
 			while (!salir) {
 				if (cambiar) {
+					// Aqui pillo al padre
 					this.actual.setI(nod.getPadre().getC().getI());
 					this.actual.setJ(nod.getPadre().getC().getJ());
 					System.out.println("Coordenadas: " + i + " I: " + this.actual.getI() + " J: " + this.actual.getJ());
@@ -103,6 +113,7 @@ public class Logica {
 					}
 					cambiar = false;
 				} else {
+					// Aqui cojo al hijo
 					cambiar = true;
 					this.listaCamino.add(nod.getIndice());
 					System.out.println("Coordenadas: " + i + " I: " + nod.getC().getI() + " J: " + nod.getC().getJ());
@@ -114,14 +125,14 @@ public class Logica {
 			}
 		}
 	}
-
+	// Metodo que inicializa los atributos tales como listaAbirta, listaCerrada, matriz[][]
 	private void inicializar(int Inicio, ArrayList<Integer> listaBloqueos, ArrayList<Integer> listaPenalizaciones) {
-		
+		//Comparador para la cola de prioridad, que pone al principio los TNodos con un camino mas corto
 		Comparator<TNodo> comparardor = new Comparator<TNodo>() {
 
 			@Override
 			public int compare(TNodo o1, TNodo o2) {
-				if(o1.getDistancia() < o2.getDistancia()){// OJO al cambiar esto se hace bien, pero ya no tiene encuenta en funcion de la heuristica
+				if(o1.getF() < o2.getF()){// OJO al cambiar esto se hace bien, pero ya no tiene encuenta en funcion de la heuristica
 					return 0;// A lo mejor -1
 				}
 				return 1;
@@ -137,22 +148,25 @@ public class Logica {
 		
 		int indice = 0;
 		
-		// Falta poner zonas de paso: prohibidas, con penalizacion, etc
+		// Inicializacion de los valores de cada TNodo de la matriz
 		for(int i = 0; i < this.dimensionN; i++){
 			for(int j = 0;j < this.dimensionM; j++){
 				boolean encontrado = false;
 				Coordenadas c = new Coordenadas(i,j);
 				TNodo nodo = new TNodo(false, 0, 0, 0, Tipos.BUENO, c, indice);
+				// Cogemos el inicio
 				if(indice == Inicio){
 					this.inicio = nodo.getC();
 				}
 				else{
+					// Marcamos los TNodos que sean PROHIBIDOS
 					for(int k = 0; k < listaBloqueos.size() && !encontrado; k++){
 						if(indice == listaBloqueos.get(k)){
 							encontrado = true;
 							nodo.setTipo(Tipos.PROHIBIDO);
 						}
 					}
+					// Marcamos los TNodos que sean PENALIZACIONES
 					for(int k = 0; k < listaPenalizaciones.size() && !encontrado; k++){
 						if(indice == listaPenalizaciones.get(k)){
 							encontrado = true;
@@ -164,34 +178,8 @@ public class Logica {
 				this.matriz[i][j] = nodo;				
 			}
 		}
-	}
-
-	public void generarTableroAleatoriamente(){
-		/*this.inicio.setI((int) (Math.random()*this.dimensionN));
-		this.inicio.setJ((int) (Math.random()*this.dimensionM));
-		System.out.println("Inicio: "+this.inicio.getI()+ " " + this.inicio.getJ());
-		
-		
-		this.meta.setI((int) (Math.random()*this.dimensionN));
-		this.meta.setJ((int) (Math.random()*this.dimensionM));
-		// Para que no salga un mismo punto de Inicio y de Meta
-		while((this.meta.getI()!=this.inicio.getI()) && (this.meta.getJ()!= this.inicio.getJ())){
-			this.meta.setI((int) (Math.random()*this.dimensionN));
-			this.meta.setJ((int) (Math.random()*this.dimensionM));
-		}*/
-		TNodo aux = this.matriz[this.inicio.getI()][this.inicio.getJ()];
-		System.out.println("Meta: "+this.meta.getI()+ " " + this.meta.getJ());
-		
-		
-		/*double suma = Math.pow((this.inicio.getI()-meta.getI()), 2)+Math.pow((inicio.getJ()-meta.getJ()), 2);
-		double sol = Math.sqrt(suma);
-		System.out.println("Solucion: " + sol);*/
-		aux.calcularH(this.inicio, this.meta);
-		aux.setG(0);
-		aux.calcularF();
-		
-		// Ya generados los puntos de Inicio y Meta		
-	}
+	}	
+	// Metodo que se encarga de hacer las correspondientes operaciones para ver cual es el mejor camino
 	public void calcularCamino(){
 		boolean salir = false;
 		Coordenadas aux = new Coordenadas(0,0);
@@ -202,7 +190,9 @@ public class Logica {
 		this.cerrada.add(this.matriz[this.actual.getI()][this.actual.getJ()]);
 		this.matriz[this.actual.getI()][this.actual.getJ()].setUsado(true);
 		
+		// Daremos vueltas hasta llegar a la meta
 		while (!salir) {
+			// Mirare si puedo desplazarme en cualquiera de las 8 direcciones posibles
 			for (int i = 0; i < 8; i++) {
 				if (i == 0) {// Arriba a la izquierda
 					aux.setI(this.actual.getI() - 1);
@@ -271,18 +261,19 @@ public class Logica {
 			if(!this.abierta.isEmpty()){
 				coge = this.abierta.peek();
 				System.out.println("Coordenadas " + coge.getC().getI() + " " + coge.getC().getJ());
-				
-				// Compruebo que no he llegado a la meta
-				if (coge.getC().getI() == this.meta.getI() && coge.getC().getJ() == this.meta.getJ()) {
-					salir = true;
-				}
-				
 				// Elegir el siguiente nodo a tratar
 				this.actual = coge.getC();
 				this.abierta.poll();
 				this.cerrada.add(coge);
+			
+				// Compruebo que no he llegado a la meta
+				if (coge.getC().getI() == this.meta.getI() && coge.getC().getJ() == this.meta.getJ()) {
+					salir = true;
+				}
 			}
+			// Si esta vacia, es que no hay mas soluciones
 			else{
+				// Compruebo si hemos llegado al final
 				if(this.abierta.isEmpty() && this.actual.getI() != this.meta.getI() && this.actual.getJ() != this.meta.getJ()){
 					salir = true;
 					this.noPudo = true;
@@ -291,7 +282,7 @@ public class Logica {
 		}
 	}
 	public void hacerLoMismo(TNodo coge, Coordenadas aux, boolean sumar){
-		// No tenemos que haber pasado por ahi
+		// No hemos pasado por ese TNodo y el TNodo no es de tipo PROHIBIDO
 		if(!this.matriz[aux.getI()][aux.getJ()].getUsado() && this.matriz[aux.getI()][aux.getJ()].getTipo() != Tipos.PROHIBIDO){
 			coge.setUsado(true);
 			TNodo padre = this.matriz[this.actual.getI()][this.actual.getJ()];
@@ -300,41 +291,61 @@ public class Logica {
 			this.matriz[aux.getI()][aux.getJ()].calcularG();
 			this.matriz[aux.getI()][aux.getJ()].calcularF();
 			
-			if(sumar){// raiz de 2
+			
+			// Le sumo a la distancia de raiz de 2
+			if(sumar){
 				this.matriz[aux.getI()][aux.getJ()].setDistancia(Math.sqrt(2)+padre.getDistancia());
 			}
-			else{// 1
+			// Le sumo a la distancia de 1
+			else{
 				this.matriz[aux.getI()][aux.getJ()].setDistancia(1+padre.getDistancia());
 			}
+			// Si el TNodo es de tipo PENALIZACION, se la añado
 			if(this.matriz[aux.getI()][aux.getJ()].getTipo() == Tipos.PENALIZACION){
 				this.matriz[aux.getI()][aux.getJ()].setF(this.matriz[aux.getI()][aux.getJ()].getF()+this.valorPenalizacion);
 				this.matriz[aux.getI()][aux.getJ()].setDistancia(this.matriz[aux.getI()][aux.getJ()].getDistancia()+this.valorPenalizacion);
 			}
 			this.abierta.add(this.matriz[aux.getI()][aux.getJ()]);
 		}
-		// Revisar
-		/*else if(!this.comprobadorCerrada[this.matriz[aux.getI()][aux.getJ()].getIndice()] && this.matriz[aux.getI()][aux.getJ()].getTipo() != Tipos.PROHIBIDO){
+		// Esto quiere decir que TNodo ya esta en la lista de prioridad
+		else if(this.matriz[aux.getI()][aux.getJ()].getUsado()){
 			TNodo antiguo = this.matriz[aux.getI()][aux.getJ()];
 			TNodo padre = this.matriz[this.actual.getI()][this.actual.getJ()];
 			this.matriz[aux.getI()][aux.getJ()].setPadre(padre);
-			if(sumar){// raiz de 2
+			this.matriz[aux.getI()][aux.getJ()].calcularH(aux, this.meta);
+			this.matriz[aux.getI()][aux.getJ()].calcularG();
+			this.matriz[aux.getI()][aux.getJ()].calcularF();
+			
+			
+			// Le sumo a la distancia de raiz de 2
+			if(sumar){
 				this.matriz[aux.getI()][aux.getJ()].setDistancia(Math.sqrt(2)+padre.getDistancia());
 			}
-			else{// 1
+			// Le sumo a la distancia de 1
+			else{
 				this.matriz[aux.getI()][aux.getJ()].setDistancia(1+padre.getDistancia());
 			}
-			if(antiguo.getDistancia()<this.matriz[aux.getI()][aux.getJ()].getDistancia()){
+			// Si el TNodo es de tipo PENALIZACION, se la añado
+			if(this.matriz[aux.getI()][aux.getJ()].getTipo() == Tipos.PENALIZACION){
+				this.matriz[aux.getI()][aux.getJ()].setF(this.matriz[aux.getI()][aux.getJ()].getF()+this.valorPenalizacion);
+				this.matriz[aux.getI()][aux.getJ()].setDistancia(this.matriz[aux.getI()][aux.getJ()].getDistancia()+this.valorPenalizacion);
+			}
+			TNodo nuevo = this.matriz[aux.getI()][aux.getJ()];
+			// Lo volvemos a poner
+			if(antiguo.getF() <= nuevo.getF()){
 				this.matriz[aux.getI()][aux.getJ()] = antiguo;
 			}
-		}*/
+			// Hay que guardalo en la lista de prioridad
+			else {
+				ArrayList<TNodo> abiertaAux = new ArrayList<>();
+				boolean 
+				for(int i =0 ; i < this.abierta.size() && !sal; i++){
+					
+				}
+			}
+		}
 	}
-	
-	public TNodo[][] getMatriz(){
-		return this.matriz;
-	}
-	public TNodo getTNodoEspecifico(int i, int j){
-		return this.matriz[i][j];
-	}
+	// Getter para que en la capa de Presentacion en la clase Pintar podamos ver si se ha podido llegar a la meta o no
 	public ArrayList<Integer> getListaCamino(){
 		return this.listaCamino;
 	}
