@@ -2,22 +2,24 @@ package CapaNegocio;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.PriorityQueue;
 
 public class Logica {
 	private int dimensionN;
 	private int dimensionM;
 	private TNodo[][] matriz;
-	private ArrayList<TNodo> cerrada;
+	
 	private Coordenadas meta;
 	private Coordenadas inicio;
 	private Coordenadas actual;
 	private boolean noPudo;
 	private boolean finBucle;
+	private double valorPenalizacion;
 	
 	// Tiene que ordenar en funcion de la f() de menor a mayor
 	private PriorityQueue <TNodo> abierta;
-	
+	private ArrayList<TNodo> cerrada;
 	private ArrayList<Integer> listaCamino;
 	
 	
@@ -26,6 +28,7 @@ public class Logica {
 		this.dimensionN = n;
 		this.noPudo = false;
 		this.finBucle = false;
+		this.valorPenalizacion = 2;
 		this.listaCamino = new ArrayList<>();
 		
 		
@@ -114,12 +117,11 @@ public class Logica {
 
 	private void inicializar(int Inicio, ArrayList<Integer> listaBloqueos, ArrayList<Integer> listaPenalizaciones) {
 		
-		
 		Comparator<TNodo> comparardor = new Comparator<TNodo>() {
 
 			@Override
 			public int compare(TNodo o1, TNodo o2) {
-				if(o1.getF() < o2.getF()){
+				if(o1.getDistancia() < o2.getDistancia()){// OJO al cambiar esto se hace bien, pero ya no tiene encuenta en funcion de la heuristica
 					return 0;// A lo mejor -1
 				}
 				return 1;
@@ -297,16 +299,21 @@ public class Logica {
 			this.matriz[aux.getI()][aux.getJ()].calcularH(aux, this.meta);
 			this.matriz[aux.getI()][aux.getJ()].calcularG();
 			this.matriz[aux.getI()][aux.getJ()].calcularF();
-			/*if(sumar){// raiz de 2
+			
+			if(sumar){// raiz de 2
 				this.matriz[aux.getI()][aux.getJ()].setDistancia(Math.sqrt(2)+padre.getDistancia());
 			}
 			else{// 1
 				this.matriz[aux.getI()][aux.getJ()].setDistancia(1+padre.getDistancia());
-			}*/
+			}
+			if(this.matriz[aux.getI()][aux.getJ()].getTipo() == Tipos.PENALIZACION){
+				this.matriz[aux.getI()][aux.getJ()].setF(this.matriz[aux.getI()][aux.getJ()].getF()+this.valorPenalizacion);
+				this.matriz[aux.getI()][aux.getJ()].setDistancia(this.matriz[aux.getI()][aux.getJ()].getDistancia()+this.valorPenalizacion);
+			}
 			this.abierta.add(this.matriz[aux.getI()][aux.getJ()]);
 		}
 		// Revisar
-		/*else if(this.matriz[aux.getI()][aux.getJ()].getUsado()){
+		/*else if(!this.comprobadorCerrada[this.matriz[aux.getI()][aux.getJ()].getIndice()] && this.matriz[aux.getI()][aux.getJ()].getTipo() != Tipos.PROHIBIDO){
 			TNodo antiguo = this.matriz[aux.getI()][aux.getJ()];
 			TNodo padre = this.matriz[this.actual.getI()][this.actual.getJ()];
 			this.matriz[aux.getI()][aux.getJ()].setPadre(padre);
