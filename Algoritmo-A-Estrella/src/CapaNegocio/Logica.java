@@ -16,6 +16,7 @@ public class Logica {
 	private boolean noPudo;
 	private boolean finBucle;
 	private double valorPenalizacion;
+	private double valorPenalizacionMin;
 	
 	// Tiene que ordenar en funcion de la f() de menor a mayor
 	private PriorityQueue <TNodo> abierta;
@@ -28,7 +29,9 @@ public class Logica {
 		this.dimensionN = n;
 		this.noPudo = false;
 		this.finBucle = false;
-		this.valorPenalizacion = 2;
+		this.valorPenalizacion = Math.pow(this.dimensionN, 2)+Math.pow(this.dimensionM, 2);
+		this.valorPenalizacion *= 0.7;
+		this.valorPenalizacionMin = this.valorPenalizacion*0.1;
 		this.listaCamino = new ArrayList<>();
 		
 		
@@ -302,13 +305,14 @@ public class Logica {
 			}
 			// Si el TNodo es de tipo PENALIZACION, se la añado
 			if(this.matriz[aux.getI()][aux.getJ()].getTipo() == Tipos.PENALIZACION){
-				this.matriz[aux.getI()][aux.getJ()].setF(this.matriz[aux.getI()][aux.getJ()].getF()+this.valorPenalizacion);
-				this.matriz[aux.getI()][aux.getJ()].setDistancia(this.matriz[aux.getI()][aux.getJ()].getDistancia()+this.valorPenalizacion);
+				double penalizacion = elegirPenalizacion();
+				this.matriz[aux.getI()][aux.getJ()].setF(this.matriz[aux.getI()][aux.getJ()].getF()+ penalizacion);
+				this.matriz[aux.getI()][aux.getJ()].setDistancia(this.matriz[aux.getI()][aux.getJ()].getDistancia()+penalizacion);
 			}
 			this.abierta.add(this.matriz[aux.getI()][aux.getJ()]);
 		}
 		// Esto quiere decir que TNodo ya esta en la lista de prioridad
-		else if(this.matriz[aux.getI()][aux.getJ()].getUsado()){
+		/*else if(this.matriz[aux.getI()][aux.getJ()].getUsado()){
 			TNodo antiguo = this.matriz[aux.getI()][aux.getJ()];
 			TNodo padre = this.matriz[this.actual.getI()][this.actual.getJ()];
 			this.matriz[aux.getI()][aux.getJ()].setPadre(padre);
@@ -327,24 +331,40 @@ public class Logica {
 			}
 			// Si el TNodo es de tipo PENALIZACION, se la añado
 			if(this.matriz[aux.getI()][aux.getJ()].getTipo() == Tipos.PENALIZACION){
-				this.matriz[aux.getI()][aux.getJ()].setF(this.matriz[aux.getI()][aux.getJ()].getF()+this.valorPenalizacion);
-				this.matriz[aux.getI()][aux.getJ()].setDistancia(this.matriz[aux.getI()][aux.getJ()].getDistancia()+this.valorPenalizacion);
+				double penalizacion = elegirPenalizacion();
+				this.matriz[aux.getI()][aux.getJ()].setF(this.matriz[aux.getI()][aux.getJ()].getF()+ penalizacion);
+				this.matriz[aux.getI()][aux.getJ()].setDistancia(this.matriz[aux.getI()][aux.getJ()].getDistancia()+penalizacion);
 			}
 			TNodo nuevo = this.matriz[aux.getI()][aux.getJ()];
-			// Lo volvemos a poner
+			// Lo volvemos a poner el antiguo
 			if(antiguo.getF() <= nuevo.getF()){
 				this.matriz[aux.getI()][aux.getJ()] = antiguo;
 			}
-			// Hay que guardalo en la lista de prioridad
+			// Hay que guardalo en la lista de prioridad(ponemos el nuevo)
 			else {
 				ArrayList<TNodo> abiertaAux = new ArrayList<>();
-				boolean 
-				for(int i =0 ; i < this.abierta.size() && !sal; i++){
-					
+				boolean sal = false;
+				for(int i = 0; i < this.abierta.size() && !sal; i++){
+					if(this.abierta.peek().getIndice() == nuevo.getIndice()){
+						sal = true;
+						this.abierta.poll();
+						this.abierta.add(nuevo);
+					}
+					else{
+						abiertaAux.add(this.abierta.poll());
+					}
+				}
+				for(int i = 0; i < abiertaAux.size(); i++){
+					this.abierta.add(abiertaAux.get(i));
 				}
 			}
-		}
+		}*/
 	}
+	// Metodo que calcula aleotiramente la penalizacion de la casilla
+	private double elegirPenalizacion() {
+		return (Math.random() * (this.valorPenalizacion-this.valorPenalizacionMin)) + this.valorPenalizacionMin;
+	}
+
 	// Getter para que en la capa de Presentacion en la clase Pintar podamos ver si se ha podido llegar a la meta o no
 	public ArrayList<Integer> getListaCamino(){
 		return this.listaCamino;

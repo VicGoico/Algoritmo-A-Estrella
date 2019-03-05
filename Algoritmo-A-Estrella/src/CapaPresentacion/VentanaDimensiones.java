@@ -40,15 +40,19 @@ public class VentanaDimensiones extends JFrame{
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				ventana.setVisible(false);
+				//ventana.setVisible(false);
 				try{
+					
 					int n = Integer.parseInt(textoN.getText());
 					int m = Integer.parseInt(textoM.getText());
+					ventana.setVisible(false);
 					Pintar p = new Pintar(n, m);
+					
 				}
 				catch(Exception fallo){
+					textoN.setText("");
+					textoM.setText("");
 					JOptionPane.showMessageDialog(null, "Las dimensiones no tienen un buen formato"+System.lineSeparator()+"Recuerda: Tienen que ser numeros sin comas");
-					System.exit(0);
 				}
 				
 				

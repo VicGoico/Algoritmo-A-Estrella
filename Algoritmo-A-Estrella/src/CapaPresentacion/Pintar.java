@@ -26,6 +26,7 @@ public class Pintar extends JFrame{
 	
 	// Para elegir el inicio, la meta y los obstaculos
 	private int Inicio = -1;						// Color VERDE
+	private int Meta = -1;							// Color GRIS CLARO
 	private ArrayList<Integer> listaMetas;			// Color AMARILLO
 	private ArrayList<Integer> listaBloqueos;		// Color ROJO
 	private ArrayList<Integer> listaPenalizaciones; // Color GRIS OSCURO
@@ -53,7 +54,7 @@ public class Pintar extends JFrame{
 					String [] a = s.split(" ");
 					int indice = Integer.parseInt(a[1]);
 					// Para elegir el INICIO
-					if(Inicio == -1 && matrizBotones[indice].getBackground() != Color.RED && matrizBotones[indice].getBackground() != Color.YELLOW){
+					if(Inicio == -1 && matrizBotones[indice].getBackground() != Color.RED && matrizBotones[indice].getBackground() != Color.YELLOW && matrizBotones[indice].getBackground() != Color.DARK_GRAY && matrizBotones[indice].getBackground() != Color.LIGHT_GRAY){
 						matrizBotones[indice].setBackground(Color.GREEN);
 						Inicio = indice;
 					}
@@ -62,8 +63,17 @@ public class Pintar extends JFrame{
 						matrizBotones[indice].setBackground(Color.BLUE);
 						Inicio = -1;
 					}
-
-					// Para elegir la META
+					// Para designar la meta
+					else if(Meta == -1 && matrizBotones[indice].getBackground() != Color.RED && matrizBotones[indice].getBackground() != Color.YELLOW && matrizBotones[indice].getBackground() != Color.DARK_GRAY && matrizBotones[indice].getBackground() != Color.GREEN ){
+						matrizBotones[indice].setBackground(Color.LIGHT_GRAY);
+						Meta = indice;
+					}
+					// Borrar la meta
+					else if(Meta == indice){
+						matrizBotones[indice].setBackground(Color.BLUE);
+						Meta = -1;
+					}
+					// Para elegir la "way points"
 					// Si esta pintado de azul, la cogemos y la pintamos de amarillo
 					else if(matrizBotones[indice].getBackground() == Color.BLUE){				
 						matrizBotones[indice].setBackground(Color.YELLOW);
@@ -126,6 +136,7 @@ public class Pintar extends JFrame{
 					for(int i = 0; i < listaPenalizaciones.size(); i++){
 						penalizaciones.add(listaPenalizaciones.get(i));
 					}
+					listaMetas.add(Meta);
 					Logica l = new Logica(n, m, Inicio, listaMetas, listaBloqueos, listaPenalizaciones);
 					if(l.getListaCamino().isEmpty()){
 						JOptionPane.showMessageDialog(null, "No se pudo llegar a la meta");
@@ -139,6 +150,7 @@ public class Pintar extends JFrame{
 						for(int i = 0; i < metas.size(); i++){
 							matrizBotones[metas.get(i)].setBackground(Color.YELLOW);
 						}
+						matrizBotones[Meta].setBackground(Color.LIGHT_GRAY);
 						for(int i = 0; i < penalizaciones.size(); i++){
 							matrizBotones[penalizaciones.get(i)].setBackground(Color.DARK_GRAY);
 						}
@@ -153,7 +165,7 @@ public class Pintar extends JFrame{
 
 			private boolean comprobarDatosMinimos() {
 				if(Inicio != -1){
-					if(!listaMetas.isEmpty()){
+					if(Meta != -1){
 						return true;
 					}
 				}
