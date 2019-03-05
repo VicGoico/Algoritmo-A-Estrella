@@ -10,6 +10,7 @@ import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
@@ -19,10 +20,16 @@ public class Pintar extends JFrame{
 	private JButton[] matrizBotones;
 	private JFrame ventanaPrincipal;
 	private JPanel arriba;
+	private JPanel centro;
 	private JPanel abajo;
 	private JButton iniciar;
 	private JButton limpiar;
+	private JButton cambiarModo;
 	private JButton salir;
+	private JButton cogerDato;
+	private JLabel informacion;
+	
+	private boolean cambiar;
 	
 	// Para elegir el inicio, la meta y los obstaculos
 	private int Inicio = -1;						// Color VERDE
@@ -118,8 +125,10 @@ public class Pintar extends JFrame{
 			});
 			
 			// Lo añado al panel ARRIBA donde se mostrar mas tarde por pantalla
-			this.arriba.add(this.matrizBotones[i]);
+			this.centro.add(this.matrizBotones[i]);
 		}
+		
+		
 		// Creacion del boton INICIAR
 		this.iniciar = new JButton("Iniciar");
 		this.iniciar.addActionListener(new ActionListener() {
@@ -189,6 +198,27 @@ public class Pintar extends JFrame{
 		});
 		this.abajo.add(this.limpiar);
 		
+		// Creacion del boton Cambiar modo
+		this.cambiarModo = new JButton("Cambiar MODO");
+		this.cambiarModo.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// Modo normal
+				if(cambiar){
+					cambiar = false;
+					informacion.setText("MODO CON ALTURAS");
+					//
+					
+				}
+				// Modo de alturas
+				else {
+					cambiar = true;
+					informacion.setText("MODO SIN ALTURAS");
+					
+				}
+			}
+		});		
 		// Creacion del boton SALIR
 		this.salir = new JButton("Salir");
 		this.salir.addActionListener(new ActionListener() {
@@ -202,7 +232,8 @@ public class Pintar extends JFrame{
 		
 		this.abajo.add(this.salir);
 		
-		this.ventanaPrincipal.add(this.arriba, BorderLayout.CENTER);
+		this.ventanaPrincipal.add(this.arriba, BorderLayout.NORTH);
+		this.ventanaPrincipal.add(this.centro, BorderLayout.CENTER);
 		this.ventanaPrincipal.add(this.abajo, BorderLayout.SOUTH);
 		
 		this.ventanaPrincipal.setVisible(true);
@@ -211,11 +242,17 @@ public class Pintar extends JFrame{
 	private void init(int n, int m) {
 		this.ventanaPrincipal = new JFrame("Algoritmo A Estrella");
 		this.ventanaPrincipal.setLocationRelativeTo(null);
-		this.ventanaPrincipal.setSize(420, 200);
+		// Mirar lo del tamaño de la ventana cuando se abre
+		this.ventanaPrincipal.setSize(600, 100);
 		this.ventanaPrincipal.setLayout(new BorderLayout());
 		this.ventanaPrincipal.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.arriba = new JPanel();
-		this.arriba.setLayout(new GridLayout(n, m));
+		// AQUI SETLAYOUT
+		this.informacion = new JLabel("MODO SIN ALTURAS");
+		this.cambiar = true;
+		
+		this.centro = new JPanel();
+		this.centro.setLayout(new GridLayout(n, m));
 		this.abajo = new JPanel();
 		this.abajo.setLayout(new FlowLayout());
 	}

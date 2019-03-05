@@ -311,58 +311,10 @@ public class Logica {
 			}
 			this.abierta.add(this.matriz[aux.getI()][aux.getJ()]);
 		}
-		// Esto quiere decir que TNodo ya esta en la lista de prioridad
-		/*else if(this.matriz[aux.getI()][aux.getJ()].getUsado()){
-			TNodo antiguo = this.matriz[aux.getI()][aux.getJ()];
-			TNodo padre = this.matriz[this.actual.getI()][this.actual.getJ()];
-			this.matriz[aux.getI()][aux.getJ()].setPadre(padre);
-			this.matriz[aux.getI()][aux.getJ()].calcularH(aux, this.meta);
-			this.matriz[aux.getI()][aux.getJ()].calcularG();
-			this.matriz[aux.getI()][aux.getJ()].calcularF();
-			
-			
-			// Le sumo a la distancia de raiz de 2
-			if(sumar){
-				this.matriz[aux.getI()][aux.getJ()].setDistancia(Math.sqrt(2)+padre.getDistancia());
-			}
-			// Le sumo a la distancia de 1
-			else{
-				this.matriz[aux.getI()][aux.getJ()].setDistancia(1+padre.getDistancia());
-			}
-			// Si el TNodo es de tipo PENALIZACION, se la añado
-			if(this.matriz[aux.getI()][aux.getJ()].getTipo() == Tipos.PENALIZACION){
-				double penalizacion = elegirPenalizacion();
-				this.matriz[aux.getI()][aux.getJ()].setF(this.matriz[aux.getI()][aux.getJ()].getF()+ penalizacion);
-				this.matriz[aux.getI()][aux.getJ()].setDistancia(this.matriz[aux.getI()][aux.getJ()].getDistancia()+penalizacion);
-			}
-			TNodo nuevo = this.matriz[aux.getI()][aux.getJ()];
-			// Lo volvemos a poner el antiguo
-			if(antiguo.getF() <= nuevo.getF()){
-				this.matriz[aux.getI()][aux.getJ()] = antiguo;
-			}
-			// Hay que guardalo en la lista de prioridad(ponemos el nuevo)
-			else {
-				ArrayList<TNodo> abiertaAux = new ArrayList<>();
-				boolean sal = false;
-				for(int i = 0; i < this.abierta.size() && !sal; i++){
-					if(this.abierta.peek().getIndice() == nuevo.getIndice()){
-						sal = true;
-						this.abierta.poll();
-						this.abierta.add(nuevo);
-					}
-					else{
-						abiertaAux.add(this.abierta.poll());
-					}
-				}
-				for(int i = 0; i < abiertaAux.size(); i++){
-					this.abierta.add(abiertaAux.get(i));
-				}
-			}
-		}*/
 	}
 	// Metodo que calcula aleotiramente la penalizacion de la casilla
 	private double elegirPenalizacion() {
-		return (Math.random() * (this.valorPenalizacion-this.valorPenalizacionMin)) + this.valorPenalizacionMin;
+		return (Math.random() * ((this.valorPenalizacion+1)-this.valorPenalizacionMin)) + this.valorPenalizacionMin;
 	}
 
 	// Getter para que en la capa de Presentacion en la clase Pintar podamos ver si se ha podido llegar a la meta o no
