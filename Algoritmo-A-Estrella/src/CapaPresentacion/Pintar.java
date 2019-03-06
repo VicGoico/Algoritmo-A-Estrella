@@ -8,11 +8,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 import CapaNegocio.Logica;
 
@@ -22,12 +25,15 @@ public class Pintar extends JFrame{
 	private JPanel arriba;
 	private JPanel centro;
 	private JPanel abajo;
+	private JLabel informacion;
 	private JButton iniciar;
 	private JButton limpiar;
 	private JButton cambiarModo;
+	private JLabel nombreAltura;
+	private JTextField altura;
 	private JButton salir;
-	private JButton cogerDato;
-	private JLabel informacion;
+	
+	
 	
 	private boolean cambiar;
 	
@@ -207,18 +213,33 @@ public class Pintar extends JFrame{
 				// Modo normal
 				if(cambiar){
 					cambiar = false;
-					informacion.setText("MODO CON ALTURAS");
-					//
-					
+					informacion.setText("Modo CON alturas");
+					altura.setEditable(true);
 				}
 				// Modo de alturas
 				else {
 					cambiar = true;
-					informacion.setText("MODO SIN ALTURAS");
-					
+					informacion.setText("Modo SIN alturas");
+					altura.setText("");
+					altura.setEditable(false);
 				}
 			}
 		});		
+		this.abajo.add(this.cambiarModo);
+		
+		// Cracion del campo para meter la altura
+		this.nombreAltura = new JLabel("ALTURA");
+		this.abajo.add(this.nombreAltura);
+		
+		JPanel aux = new JPanel();
+		aux.setLayout(new GridLayout(1, 1));
+		this.altura = new JTextField();
+		this.altura.setSize(100, 100);
+		//this.altura.setLayout(new GridLayout(1, 1));
+		this.altura.setEditable(false);
+		//aux.add(this.altura);
+		this.abajo.add(this.altura);
+		
 		// Creacion del boton SALIR
 		this.salir = new JButton("Salir");
 		this.salir.addActionListener(new ActionListener() {
@@ -229,7 +250,6 @@ public class Pintar extends JFrame{
 				System.exit(0);
 			}
 		});
-		
 		this.abajo.add(this.salir);
 		
 		this.ventanaPrincipal.add(this.arriba, BorderLayout.NORTH);
@@ -237,6 +257,7 @@ public class Pintar extends JFrame{
 		this.ventanaPrincipal.add(this.abajo, BorderLayout.SOUTH);
 		
 		this.ventanaPrincipal.setVisible(true);
+		this.ventanaPrincipal.pack();
 	}
 	
 	private void init(int n, int m) {
@@ -247,8 +268,8 @@ public class Pintar extends JFrame{
 		this.ventanaPrincipal.setLayout(new BorderLayout());
 		this.ventanaPrincipal.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.arriba = new JPanel();
-		// AQUI SETLAYOUT
-		this.informacion = new JLabel("MODO SIN ALTURAS");
+		this.informacion = new JLabel("Modo SIN alturas");
+		this.arriba.add(this.informacion);
 		this.cambiar = true;
 		
 		this.centro = new JPanel();

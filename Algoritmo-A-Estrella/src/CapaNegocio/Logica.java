@@ -29,6 +29,7 @@ public class Logica {
 		this.dimensionN = n;
 		this.noPudo = false;
 		this.finBucle = false;
+		// Calculamos la penalizacion
 		this.valorPenalizacion = Math.pow(this.dimensionN, 2)+Math.pow(this.dimensionM, 2);
 		this.valorPenalizacion *= 0.7;
 		this.valorPenalizacionMin = this.valorPenalizacion*0.1;

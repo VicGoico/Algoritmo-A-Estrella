@@ -74,6 +74,7 @@ public class VentanaDimensiones extends JFrame{
 		this.ventana.add(this.centro, BorderLayout.CENTER);
 		this.ventana.add(this.abajo, BorderLayout.SOUTH);
 		this.ventana.setVisible(true);
+		this.ventana.pack();
 		
 	}
 
