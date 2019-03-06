@@ -34,7 +34,7 @@ public class Pintar extends JFrame{
 	private JButton salir;
 	
 	
-	
+	private double alt = 0;
 	private boolean cambiar;
 	
 	// Para elegir el inicio, la meta y los obstaculos
@@ -138,49 +138,67 @@ public class Pintar extends JFrame{
 		// Creacion del boton INICIAR
 		this.iniciar = new JButton("Iniciar");
 		this.iniciar.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				// CON ALTURAS
+				/*if (cambiar) {
+					
+				}*/
 				// Comprueba que esten los valores minimos
-				if(comprobarDatosMinimos()){
+				if (comprobarDatosMinimos()) {
 					ArrayList<Integer> metas = new ArrayList<>();
-					for(int i = 0; i < listaMetas.size(); i++){
+					for (int i = 0; i < listaMetas.size(); i++) {
 						metas.add(listaMetas.get(i));
 					}
 					ArrayList<Integer> penalizaciones = new ArrayList<>();
-					for(int i = 0; i < listaPenalizaciones.size(); i++){
+					for (int i = 0; i < listaPenalizaciones.size(); i++) {
 						penalizaciones.add(listaPenalizaciones.get(i));
 					}
 					listaMetas.add(Meta);
-					Logica l = new Logica(n, m, Inicio, listaMetas, listaBloqueos, listaPenalizaciones);
-					if(l.getListaCamino().isEmpty()){
+					Logica l = new Logica(n, m, Inicio, listaMetas, listaBloqueos, listaPenalizaciones, cambiar, alt);
+					if (l.getListaCamino().isEmpty() /*|| l.getNoPudo()*/) {
 						JOptionPane.showMessageDialog(null, "No se pudo llegar a la meta");
-					}
-					else {
+					} else {
 						for (int i = 0; i < l.getListaCamino().size(); i++) {
 							matrizBotones[l.getListaCamino().get(i)].setBackground(Color.WHITE);
 						}
 						// Repinto el inicio, las metas y las penalizaciones
 						matrizBotones[Inicio].setBackground(Color.GREEN);
-						for(int i = 0; i < metas.size(); i++){
+						for (int i = 0; i < metas.size(); i++) {
 							matrizBotones[metas.get(i)].setBackground(Color.YELLOW);
 						}
 						matrizBotones[Meta].setBackground(Color.LIGHT_GRAY);
-						for(int i = 0; i < penalizaciones.size(); i++){
+						for (int i = 0; i < penalizaciones.size(); i++) {
 							matrizBotones[penalizaciones.get(i)].setBackground(Color.DARK_GRAY);
 						}
 					}
 					iniciar.setEnabled(false);
 					limpiar.setEnabled(true);
-				}
-				else{
+				} else {
 					JOptionPane.showMessageDialog(null, "Falta la meta o el inicio o ambos(colores amarillo y verde)");
 				}
 			}
 
+		private boolean comprobarDatosMinimosAltura() {
+			try {
+				alt = Double.parseDouble(altura.getText());
+				return true;
+			}
+			catch(Exception eo){
+				altura.setText("");
+				JOptionPane.showMessageDialog(null,
+						"El formato no es el correcto(Ejemplo de formato: 40.2)");
+			}					
+			return false;
+		}
+
 			private boolean comprobarDatosMinimos() {
-				if(Inicio != -1){
-					if(Meta != -1){
+				if(Inicio != -1 && Meta != -1){
+					if(!cambiar){
+						return comprobarDatosMinimosAltura();
+					}
+					else{
 						return true;
 					}
 				}
@@ -215,6 +233,9 @@ public class Pintar extends JFrame{
 					cambiar = false;
 					informacion.setText("Modo CON alturas");
 					altura.setEditable(true);
+					limpiarTablero();
+					iniciar.setEnabled(true);
+					limpiar.setEnabled(false);
 				}
 				// Modo de alturas
 				else {
@@ -222,6 +243,9 @@ public class Pintar extends JFrame{
 					informacion.setText("Modo SIN alturas");
 					altura.setText("");
 					altura.setEditable(false);
+					limpiarTablero();
+					iniciar.setEnabled(true);
+					limpiar.setEnabled(false);
 				}
 			}
 		});		
@@ -234,8 +258,6 @@ public class Pintar extends JFrame{
 		JPanel aux = new JPanel();
 		aux.setLayout(new GridLayout(1, 2));
 		this.altura = new JTextField();
-		//this.altura.setSize(100, 100);
-		//this.altura.setLayout(new GridLayout(1, 1));
 		this.altura.setEditable(false);
 		aux.add(this.nombreAltura);
 		aux.add(this.altura);
@@ -281,6 +303,7 @@ public class Pintar extends JFrame{
 	}
 	private void limpiarTablero(){
 		this.Inicio = -1;
+		this.Meta = -1;
 		this.listaMetas = new ArrayList<>();
 		this.listaBloqueos = new ArrayList<>();
 		this.listaPenalizaciones = new ArrayList<>();
@@ -288,5 +311,4 @@ public class Pintar extends JFrame{
 			this.matrizBotones[i].setBackground(Color.BLUE);
 		}
 	}
-	
 }

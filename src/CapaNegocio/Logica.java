@@ -15,6 +15,8 @@ public class Logica {
 	private Coordenadas actual;
 	private boolean noPudo;
 	private boolean finBucle;
+	private boolean modo;
+	private double alturaGeneral;
 	private double valorPenalizacion;
 	private double valorPenalizacionMin;
 	
@@ -24,11 +26,13 @@ public class Logica {
 	private ArrayList<Integer> listaCamino;
 	
 	
-	public Logica(int n, int m, int Inicio, ArrayList<Integer> listaMetas, ArrayList<Integer> listaBloqueos, ArrayList<Integer> listaPenalizaciones){
+	public Logica(int n, int m, int Inicio, ArrayList<Integer> listaMetas, ArrayList<Integer> listaBloqueos, ArrayList<Integer> listaPenalizaciones, boolean modo, double alturaGeneral){
 		this.dimensionM = m;
 		this.dimensionN = n;
 		this.noPudo = false;
 		this.finBucle = false;
+		this.modo = modo;
+		this.alturaGeneral = alturaGeneral;
 		// Calculamos la penalizacion
 		this.valorPenalizacion = Math.pow(this.dimensionN, 2)+Math.pow(this.dimensionM, 2);
 		this.valorPenalizacion *= 0.7;
@@ -36,7 +40,15 @@ public class Logica {
 		this.listaCamino = new ArrayList<>();
 		
 		
-		inicializar(Inicio, listaBloqueos, listaPenalizaciones);	
+		inicializar(Inicio, listaBloqueos, listaPenalizaciones);
+		if(!this.modo){
+			for(int i = 0; i < this.dimensionN; i++){
+				for(int j = 0; j < this.dimensionM; j++){
+					this.matriz[i][j].setAltura(hacerRandon());
+				}
+			}
+		}
+		
 		// Inicializo la meta
 		int siguienteMeta = 0;
 		
@@ -87,6 +99,13 @@ public class Logica {
 		System.out.println("FIN del PROGRAMA");
 	}
 	
+	private double hacerRandon() {
+		double min = this.alturaGeneral/2;
+		double max = this.alturaGeneral*2;
+		double ran = (Math.random() * ((max+1)-min)) + min;
+		return ran;
+	}
+
 	// Metodo que se encarga de guardar el camino que se tiene que recorrer para llegar a la meta
 	private void cogerCamino() {
 		// Si hemos podido llegar a la meta, en caso contrario finalizara la ejecucion
@@ -288,39 +307,54 @@ public class Logica {
 	public void hacerLoMismo(TNodo coge, Coordenadas aux, boolean sumar){
 		// No hemos pasado por ese TNodo y el TNodo no es de tipo PROHIBIDO
 		if(!this.matriz[aux.getI()][aux.getJ()].getUsado() && this.matriz[aux.getI()][aux.getJ()].getTipo() != Tipos.PROHIBIDO){
-			coge.setUsado(true);
-			TNodo padre = this.matriz[this.actual.getI()][this.actual.getJ()];
-			this.matriz[aux.getI()][aux.getJ()].setPadre(padre);
-			this.matriz[aux.getI()][aux.getJ()].calcularH(aux, this.meta);
-			this.matriz[aux.getI()][aux.getJ()].calcularG();
-			this.matriz[aux.getI()][aux.getJ()].calcularF();
-			
-			
-			// Le sumo a la distancia de raiz de 2
-			if(sumar){
-				this.matriz[aux.getI()][aux.getJ()].setDistancia(Math.sqrt(2)+padre.getDistancia());
+			// Con alturas
+			if(!this.modo){
+				if(coge.getAltura() <= this.alturaGeneral){
+					hacerOperaciones(coge, aux, sumar);
+				}
 			}
-			// Le sumo a la distancia de 1
+			// Sin alturas
 			else{
-				this.matriz[aux.getI()][aux.getJ()].setDistancia(1+padre.getDistancia());
+				hacerOperaciones(coge, aux, sumar);
 			}
-			// Si el TNodo es de tipo PENALIZACION, se la añado
-			if(this.matriz[aux.getI()][aux.getJ()].getTipo() == Tipos.PENALIZACION){
-				double penalizacion = elegirPenalizacion();
-				this.matriz[aux.getI()][aux.getJ()].setF(this.matriz[aux.getI()][aux.getJ()].getF()+ penalizacion);
-				this.matriz[aux.getI()][aux.getJ()].setDistancia(this.matriz[aux.getI()][aux.getJ()].getDistancia()+penalizacion);
-			}
-			this.abierta.add(this.matriz[aux.getI()][aux.getJ()]);
 		}
 	}
 	// Metodo que calcula aleotiramente la penalizacion de la casilla
 	private double elegirPenalizacion() {
 		return (Math.random() * ((this.valorPenalizacion+1)-this.valorPenalizacionMin)) + this.valorPenalizacionMin;
 	}
+	private void hacerOperaciones(TNodo coge, Coordenadas aux, boolean sumar){
+		coge.setUsado(true);
+		TNodo padre = this.matriz[this.actual.getI()][this.actual.getJ()];
+		this.matriz[aux.getI()][aux.getJ()].setPadre(padre);
+		this.matriz[aux.getI()][aux.getJ()].calcularH(aux, this.meta);
+		this.matriz[aux.getI()][aux.getJ()].calcularG();
+		this.matriz[aux.getI()][aux.getJ()].calcularF();
+		
+		
+		// Le sumo a la distancia de raiz de 2
+		if(sumar){
+			this.matriz[aux.getI()][aux.getJ()].setDistancia(Math.sqrt(2)+padre.getDistancia());
+		}
+		// Le sumo a la distancia de 1
+		else{
+			this.matriz[aux.getI()][aux.getJ()].setDistancia(1+padre.getDistancia());
+		}
+		// Si el TNodo es de tipo PENALIZACION, se la añado
+		if(this.matriz[aux.getI()][aux.getJ()].getTipo() == Tipos.PENALIZACION){
+			double penalizacion = elegirPenalizacion();
+			this.matriz[aux.getI()][aux.getJ()].setF(this.matriz[aux.getI()][aux.getJ()].getF()+ penalizacion);
+			this.matriz[aux.getI()][aux.getJ()].setDistancia(this.matriz[aux.getI()][aux.getJ()].getDistancia()+penalizacion);
+		}
+		this.abierta.add(this.matriz[aux.getI()][aux.getJ()]);
+	}
 
 	// Getter para que en la capa de Presentacion en la clase Pintar podamos ver si se ha podido llegar a la meta o no
 	public ArrayList<Integer> getListaCamino(){
 		return this.listaCamino;
+	}
+	public boolean getNoPudo(){
+		return this.noPudo;
 	}
 	
 }
