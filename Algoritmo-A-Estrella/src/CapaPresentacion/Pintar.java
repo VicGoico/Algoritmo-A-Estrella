@@ -228,17 +228,19 @@ public class Pintar extends JFrame{
 		this.abajo.add(this.cambiarModo);
 		
 		// Cracion del campo para meter la altura
-		this.nombreAltura = new JLabel("ALTURA");
-		this.abajo.add(this.nombreAltura);
+		this.nombreAltura = new JLabel("ALTURA ");
+		//this.abajo.add(this.nombreAltura);
 		
 		JPanel aux = new JPanel();
-		aux.setLayout(new GridLayout(1, 1));
+		aux.setLayout(new GridLayout(1, 2));
 		this.altura = new JTextField();
-		this.altura.setSize(100, 100);
+		//this.altura.setSize(100, 100);
 		//this.altura.setLayout(new GridLayout(1, 1));
 		this.altura.setEditable(false);
-		//aux.add(this.altura);
-		this.abajo.add(this.altura);
+		aux.add(this.nombreAltura);
+		aux.add(this.altura);
+		
+		this.abajo.add(aux);
 		
 		// Creacion del boton SALIR
 		this.salir = new JButton("Salir");
