@@ -9,6 +9,7 @@ public class Logica {
 	private int dimensionN;
 	private int dimensionM;
 	private TNodo[][] matriz;
+	private TNodo[][] matrizAntigua;
 	
 	private Coordenadas meta;
 	private Coordenadas inicio;
@@ -38,13 +39,23 @@ public class Logica {
 		this.valorPenalizacion *= 0.7;
 		this.valorPenalizacionMin = this.valorPenalizacion*0.1;
 		this.listaCamino = new ArrayList<>();
+		this.matrizAntigua = new TNodo[n][m];
+		
+		int indice = 0;
+		for(int i = 0; i < this.dimensionN; i++){
+			for(int j = 0;j < this.dimensionM; j++){
+				Coordenadas c = new Coordenadas(i,j);
+				this.matrizAntigua[i][j] = new TNodo(false, 0, 0, 0, Tipos.BUENO, c, indice);
+				indice++;
+			}
+		}
 		
 		
 		inicializar(Inicio, listaBloqueos, listaPenalizaciones);
 		if(!this.modo){
 			for(int i = 0; i < this.dimensionN; i++){
 				for(int j = 0; j < this.dimensionM; j++){
-					this.matriz[i][j].setAltura(hacerRandon());
+					this.matrizAntigua[i][j].setAltura(hacerRandon());
 				}
 			}
 		}
@@ -131,6 +142,9 @@ public class Logica {
 					System.out.println("Coordenadas: " + i + " I: " + this.actual.getI() + " J: " + this.actual.getJ());
 					this.listaCamino.add(this.matriz[this.actual.getI()][this.actual.getJ()].getIndice());
 					nod = this.matriz[this.actual.getI()][this.actual.getJ()].getPadre();
+					if(this.actual.getI() == this.inicio.getI() && this.actual.getJ() == this.inicio.getJ()){
+						salir = true;
+					}
 					if (nod == null) {
 						salir = true;
 					}
@@ -140,12 +154,18 @@ public class Logica {
 					cambiar = true;
 					this.listaCamino.add(nod.getIndice());
 					System.out.println("Coordenadas: " + i + " I: " + nod.getC().getI() + " J: " + nod.getC().getJ());
+					if(nod.getC().getI() == this.inicio.getI() && nod.getC().getJ() == this.inicio.getJ()){
+						salir = true;
+					}
 					if (nod.getPadre() == null) {
 						salir = true;
 					}
 				}
 				i++;
 			}
+		}
+		else{
+			System.out.println("Esta a false");
 		}
 	}
 	// Metodo que inicializa los atributos tales como listaAbirta, listaCerrada, matriz[][]
@@ -165,8 +185,8 @@ public class Logica {
 		this.abierta = new PriorityQueue<>(comparardor);
 		this.cerrada = new ArrayList<>();
 		this.matriz = new TNodo[this.dimensionN][this.dimensionM];
-		this.inicio = new Coordenadas(0,0);
-		this.meta = new Coordenadas(1,3);
+		//this.inicio = new Coordenadas(0,0);
+		//this.meta = new Coordenadas(1,3);
 		
 		
 		int indice = 0;
@@ -175,11 +195,14 @@ public class Logica {
 		for(int i = 0; i < this.dimensionN; i++){
 			for(int j = 0;j < this.dimensionM; j++){
 				boolean encontrado = false;
-				Coordenadas c = new Coordenadas(i,j);
-				TNodo nodo = new TNodo(false, 0, 0, 0, Tipos.BUENO, c, indice);
+				//Coordenadas c = new Coordenadas(i,j);
+				TNodo nodo = this.matrizAntigua[i][j];
+						//new TNodo(false, 0, 0, 0, Tipos.BUENO, c, indice);
 				// Cogemos el inicio
 				if(indice == Inicio){
-					this.inicio = nodo.getC();
+					Coordenadas coor =  new Coordenadas(i, j);
+					this.inicio = coor;//nodo.getC();
+					nodo.setC(coor);
 				}
 				else{
 					// Marcamos los TNodos que sean PROHIBIDOS
