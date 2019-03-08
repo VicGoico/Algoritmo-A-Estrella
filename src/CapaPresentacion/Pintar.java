@@ -156,8 +156,8 @@ public class Pintar extends JFrame{
 						penalizaciones.add(listaPenalizaciones.get(i));
 					}
 					listaMetas.add(Meta);
-					Logica l = new Logica(n, m, Inicio, listaMetas, listaBloqueos, listaPenalizaciones, cambiar, alt);
-					if (l.getListaCamino().isEmpty() /*|| l.getNoPudo()*/) {
+					Logica l = new Logica(n, m, Inicio, listaMetas, listaBloqueos, listaPenalizaciones);
+					if (l.getListaCamino().isEmpty() || l.getNoPudo()) {
 						JOptionPane.showMessageDialog(null, "No se pudo llegar a la meta");
 					} else {
 						for (int i = 0; i < l.getListaCamino().size(); i++) {
@@ -223,7 +223,7 @@ public class Pintar extends JFrame{
 		this.abajo.add(this.limpiar);
 		
 		// Creacion del boton Cambiar modo
-		this.cambiarModo = new JButton("Cambiar MODO");
+		/*this.cambiarModo = new JButton("Cambiar MODO");
 		this.cambiarModo.addActionListener(new ActionListener() {
 			
 			@Override
@@ -262,7 +262,7 @@ public class Pintar extends JFrame{
 		aux.add(this.nombreAltura);
 		aux.add(this.altura);
 		
-		this.abajo.add(aux);
+		this.abajo.add(aux);*/
 		
 		// Creacion del boton SALIR
 		this.salir = new JButton("Salir");

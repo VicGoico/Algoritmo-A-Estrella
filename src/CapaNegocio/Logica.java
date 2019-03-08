@@ -15,8 +15,8 @@ public class Logica {
 	private Coordenadas actual;
 	private boolean noPudo;
 	private boolean finBucle;
-	private boolean modo;
-	private double alturaGeneral;
+	/*private boolean modo;
+	private double alturaGeneral;*/
 	private double valorPenalizacion;
 	private double valorPenalizacionMin;
 	
@@ -26,13 +26,11 @@ public class Logica {
 	private ArrayList<Integer> listaCamino;
 	
 	
-	public Logica(int n, int m, int Inicio, ArrayList<Integer> listaMetas, ArrayList<Integer> listaBloqueos, ArrayList<Integer> listaPenalizaciones, boolean modo, double alturaGeneral){
+	public Logica(int n, int m, int Inicio, ArrayList<Integer> listaMetas, ArrayList<Integer> listaBloqueos, ArrayList<Integer> listaPenalizaciones){
 		this.dimensionM = m;
 		this.dimensionN = n;
 		this.noPudo = false;
 		this.finBucle = false;
-		this.modo = modo;
-		this.alturaGeneral = alturaGeneral;
 		// Calculamos la penalizacion
 		this.valorPenalizacion = Math.pow(this.dimensionN, 2)+Math.pow(this.dimensionM, 2);
 		this.valorPenalizacion *= 0.7;
@@ -41,13 +39,6 @@ public class Logica {
 		
 		
 		inicializar(Inicio, listaBloqueos, listaPenalizaciones);
-		if(!this.modo){
-			for(int i = 0; i < this.dimensionN; i++){
-				for(int j = 0; j < this.dimensionM; j++){
-					this.matriz[i][j].setAltura(hacerRandon());
-				}
-			}
-		}
 		
 		// Inicializo la meta
 		int siguienteMeta = 0;
@@ -99,12 +90,12 @@ public class Logica {
 		System.out.println("FIN del PROGRAMA");
 	}
 	
-	private double hacerRandon() {
+	/*private double hacerRandon() {
 		double min = this.alturaGeneral/2;
 		double max = this.alturaGeneral*2;
 		double ran = (Math.random() * ((max+1)-min)) + min;
 		return ran;
-	}
+	}*/
 
 	// Metodo que se encarga de guardar el camino que se tiene que recorrer para llegar a la meta
 	private void cogerCamino() {
@@ -308,15 +299,15 @@ public class Logica {
 		// No hemos pasado por ese TNodo y el TNodo no es de tipo PROHIBIDO
 		if(!this.matriz[aux.getI()][aux.getJ()].getUsado() && this.matriz[aux.getI()][aux.getJ()].getTipo() != Tipos.PROHIBIDO){
 			// Con alturas
-			if(!this.modo){
+			/*if(!this.modo){
 				if(coge.getAltura() <= this.alturaGeneral){
 					hacerOperaciones(coge, aux, sumar);
 				}
 			}
 			// Sin alturas
-			else{
+			else{*/
 				hacerOperaciones(coge, aux, sumar);
-			}
+			//}
 		}
 	}
 	// Metodo que calcula aleotiramente la penalizacion de la casilla
