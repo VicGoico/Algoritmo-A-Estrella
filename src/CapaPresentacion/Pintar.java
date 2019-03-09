@@ -289,6 +289,7 @@ public class Pintar extends JFrame{
 		this.ventanaPrincipal.setLocationRelativeTo(null);
 		// Mirar lo del tamaño de la ventana cuando se abre
 		this.ventanaPrincipal.setSize(600, 100);
+		this.ventanaPrincipal.setLocation(400, 200);
 		this.ventanaPrincipal.setLayout(new BorderLayout());
 		this.ventanaPrincipal.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.arriba = new JPanel();
